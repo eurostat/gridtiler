@@ -1,0 +1,26 @@
+{
+  "name": "gridtiler",
+  "version": "0.0.1",
+  "description": "Tiling gridded data stored in tabular format",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eurostat/gridtiler.git"
+  },
+  "keywords": [
+    "grid",
+    "tiling",
+    "CSV",
+    "tabular",
+    "statistics"
+  ],
+  "author": "Julien Gaffuri",
+  "license": "EUPL 1.2",
+  "bugs": {
+    "url": "https://github.com/eurostat/gridtiler/issues"
+  },
+  "homepage": "https://github.com/eurostat/gridtiler#readme"
+}
