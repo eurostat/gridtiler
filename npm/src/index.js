@@ -21,11 +21,11 @@ sudo npm uninstall -g
 */
 
 
-//https://docs.npmjs.com/packages-and-modules
+//read: https://docs.npmjs.com/packages-and-modules
 
 
-
+/*
 export const hwfun = () => {
     console.log("hello world !")
 }
-
+*/
