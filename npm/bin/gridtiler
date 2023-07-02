@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
-//import {} from 'commander'
 const cmd = require('commander')
 const pkg = require("../package.json")
-const fs = require("fs");
+//const fs = require("fs");
+//const d3f = import("d3-fetch");
+//import { csv } from 'd3-fetch'
+
+
 
 cmd
     .version(pkg.version)
@@ -19,11 +22,7 @@ cmd
     //.on('--help', () => { console.log('show help') })
     .parse(process.argv);
 
-//console.log(cmd.args)
-//console.log("hello world from grid tiler !")
-//console.log(cmd.input, cmd.output)
-
-
+//check mandatory parameters
 if (!cmd.input)
     console.error("Missing parameter: -i, --input")
 if (!cmd.resolutionGeo)
@@ -46,18 +45,27 @@ const info = {
         xMax: undefined,
         xMin: undefined
     }
-
 }
 
+console.log(d3f)
+
+//load input file
+csv(cmd.input).then((data) => {
+    console.log(data); // [{"Hello": "world"}, …]
 
 
+    //save info.json
+    const jsonData = JSON.stringify(info, null, 3);
+    fs.writeFile(cmd.output + "info.json", jsonData, function (err) {
+        if (err) console.log(err); else console.log("info.json saved")
+    });
 
-
-//save info.json
-const jsonData = JSON.stringify(info, null, 3);
-fs.writeFile(cmd.output + "info.json", jsonData, function (err) {
-    if (err) console.log(err); else console.log("info.json saved")
 });
+
+
+
+
+
 
 
 
