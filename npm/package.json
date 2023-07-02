@@ -27,6 +27,6 @@
   },
   "homepage": "https://github.com/eurostat/gridtiler#readme",
   "dependencies": {
-    "commander": "^11.0.0"
+    "commander": "2"
   }
 }

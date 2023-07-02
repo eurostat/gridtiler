@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 
-const { program } = require('commander')
+const commander = require('commander')
+const pkg = require("../package.json")
 
+commander
+    .version(pkg.version)
+    .usage("[options] <[name=]file>…")
+    .description(pkg.description)
+    .option("-i, --input <file>", "input file name")
+    .option("-o, --output <folder>", "output folder", "/out/")
+    //.option("-n, --newline-delimited", "accept newline-delimited JSON")
+    //.option("-q, --quantization <count>", "pre-quantization parameter; 0 disables quantization", 0)
+    //.on('--help', () => { console.log('show help') })
+    .parse(process.argv);
+
+console.log(commander.args)
 console.log("hello world from grid tiler !")
-
-program
-    .version(packageJSON.version)
-    .description(packageJSON.description)
-    /*.usage('<option>')
-.option('-n, --nameType <option>', 'name', 'fullName')
-.option('-t, --times <option>', 'number of times', 1)
-.option('-i --info', 'info', false)
-.option('-s --save', 'save as json', false)*/
-
-
-
