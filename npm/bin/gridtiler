@@ -16,3 +16,5 @@ commander
 
 console.log(commander.args)
 console.log("hello world from grid tiler !")
+console.log(commander.input, commander.output)
+
