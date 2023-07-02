@@ -6,7 +6,11 @@ const pkg = require("../package.json")
 //const d3f = import("d3-fetch");
 //import { csv } from 'd3-fetch'
 
+//gridtiler -i example/ex.csv -r 1200 --crs 3035 -t 256 -x 111 -y 444
 
+//const { doTiling } = require("../lib/tiling");
+const gt = require("../");
+console.log(gt)
 
 cmd
     .version(pkg.version)
@@ -47,20 +51,11 @@ const info = {
     }
 }
 
-console.log(d3f)
 
-//load input file
-csv(cmd.input).then((data) => {
-    console.log(data); // [{"Hello": "world"}, …]
+//launch tiling
+gt.doTiling(cmd.input, cmd.output, info)
 
 
-    //save info.json
-    const jsonData = JSON.stringify(info, null, 3);
-    fs.writeFile(cmd.output + "info.json", jsonData, function (err) {
-        if (err) console.log(err); else console.log("info.json saved")
-    });
-
-});
 
 
 

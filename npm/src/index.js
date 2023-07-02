@@ -8,6 +8,21 @@
 //https://github.com/topojson/topojson-server/tree/master
 
 
+
+//import { csv } from 'd3-fetch'
+
+const d3f = import('d3-fetch')
+//Promise.all().then(write).catch(abort);
+//https://javascript.info/modules-dynamic-imports
+
+exports.doTiling = (input, output, info) => {
+
+    console.log(input)
+    console.log(d3f)
+
+}
+
+
 /*
 install, uninstall locally
 https://github.com/nodejs/examples/blob/main/cli/commander/fake-names-generator/README.md#as-a-local-project
