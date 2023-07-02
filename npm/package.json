@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Tiling gridded data stored in tabular format",
   "main": "index.js",
-  "module": "src/index.js",
   "bin": {
     "gridtiler": "bin/gridtiler"
   },
@@ -26,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/eurostat/gridtiler/issues"
   },
-  "homepage": "https://github.com/eurostat/gridtiler#readme"
+  "homepage": "https://github.com/eurostat/gridtiler#readme",
+  "dependencies": {
+    "commander": "^11.0.0"
+  }
 }
