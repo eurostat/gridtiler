@@ -3,7 +3,7 @@
 /*
 sudo npm i -g
 sudo npm uninstall -g
-gridtiler -i example/pop_2018_100km.csv -r 1200 --crs 3035 -t 256 -x 111 -y 444
+gridtiler -i example/pop_2018_10km.csv -r 10000 --crs 3035 -t 128 -x 0 -y 0
 */
 
 //examples:
