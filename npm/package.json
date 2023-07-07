@@ -32,8 +32,7 @@
     "server": "webpack serve -c webpack.config.dev.js --static ./",
     "doc": "./node_modules/.bin/jsdoc src/ src/dataset src/legend src/style -d docs/jsdoc",
     "build": "webpack --config webpack.config.prod.cjs",
-    "test": "jest",
-    "gridtiler": "node bin/gridtiler"
+    "test": "jest"
   },
   "files": [
     "bin/*",
@@ -41,7 +40,7 @@
     "src/**/*.js"
   ],
   "bin": {
-    "gridtiler": "bin/gridtiler"
+    "gridtiler": "bin/gridtiler.js"
   },
   "dependencies": {
     "commander": "2",
@@ -61,5 +60,8 @@
     "webpack-cli": "^5.0.0",
     "webpack-dev-server": "^4.11.1",
     "webpack-livereload-plugin": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
