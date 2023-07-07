@@ -1,4 +1,4 @@
-# gridtiler javascript
+# GridTiler - in javascript
 
 ## Installation
 
