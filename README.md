@@ -4,6 +4,6 @@ Tool to produce tiled grids in [tiled grid format](https://github.com/eurostat/g
 
 See in the subfolder for resources in various programming environments:
 - [Javascript](npm/)
-- [Python](/python)
+- [Python](/py)
 - [Java](/java)
 
