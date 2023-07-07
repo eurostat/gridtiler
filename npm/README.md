@@ -3,9 +3,11 @@
 ## Installation
 
 - Install first Nodejs, version >=14
-- Run npm install gridtiler -g
+- Run `npm install gridtiler -g`
+
+The command `gridtiler` will then be available.
 
 ## Usage
 
-Run gridtiler --help to show the help.
+Run `gridtiler --help` to show the help.
 
