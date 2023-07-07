@@ -1,0 +1,126 @@
+#!/usr/bin/env node
+
+//gridtiler -i example/ex.csv -r 1200 --crs 3035 -t 256 -x 111 -y 444
+
+
+const pkg = require("../dist/gridtiler")
+
+
+console.log("helloXX")
+return
+
+
+
+/*
+const cmd = require('commander')
+//const pkg = require("../package.json")
+//const fs = require("fs");
+//const d3f = import("d3-fetch");
+//import { csv } from 'd3-fetch'
+
+
+//const { doTiling } = require("../lib/tiling");
+const gt = require("../");
+console.log(gt)
+
+//"module": "src/index.js",
+/*
+"bin": {
+    "geo2topo": "bin/geo2topo"
+  },*/
+
+
+cmd
+    .version(pkg.version)
+    .usage("[options] <[name=]file>…")
+    .description(pkg.description)
+    .option("-i, --input <file>", "input file name")
+    .option("-o, --output <folder>", "output folder", "out/")
+    .option("-c, --crs <EPSG code>", "EPSG code of the grid Coordinate Reference System", "")
+    .option("-t, --tileSizeCell <number>", "The size of the tile in number of cells", 128)
+    .option("-x, --originPointX <number>", "The X coordinate of the tiling scheme origin point", 0)
+    .option("-y, --originPointY <number>", "The Y coordinate of the tiling scheme origin point", 0)
+    .option("-r, --resolutionGeo <number>", "The grid resolution, that is the size of a grid cell in the CRS unit")
+    //.on('--help', () => { console.log('show help') })
+    .parse(process.argv);
+
+//check mandatory parameters
+if (!cmd.input)
+    console.error("Missing parameter: -i, --input")
+if (!cmd.resolutionGeo)
+    console.error("Missing parameter: -res, --resolutionGeo")
+
+
+//create tiling info object
+const info = {
+    dims: [],
+    crs: cmd.crs,
+    tileSizeCell: cmd.tileSizeCell,
+    originPoint: {
+        x: cmd.originPointX,
+        y: cmd.originPointY
+    },
+    resolutionGeo: cmd.resolutionGeo,
+    tilingBounds: {
+        yMin: undefined,
+        yMax: undefined,
+        xMax: undefined,
+        xMin: undefined
+    }
+}
+
+
+//launch tiling
+gt.doTiling(cmd.input, cmd.output, info)
+
+
+
+
+
+
+
+
+
+
+
+//info.json
+/*/if does not exists, create and return
+if (!fs.existsSync(cmd.output + "info.json")) {
+    console.log("No info.json file in output folder " + cmd.output)
+    fs.mkdirSync(cmd.output, { recursive: true })
+    const infoDefault = {
+        dims: [],
+        crs: "",
+        tileSizeCell: 128,
+        originPoint: {
+            x: 0,
+            y: 0
+        },
+        resolutionGeo: 1
+    }
+    //TODO
+    //save
+    const jsonData = JSON.stringify(infoDefault, null, 3);
+    fs.writeFile(cmd.output + "info.json", jsonData, function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("New info.json file created in output folder " + cmd.output)
+            console.log("Fill it and relaunch the process.")
+        }
+    });
+    return
+}
+
+//load info.json
+fs.readFile(cmd.output + "info.json", 'utf8', (err, data) => {
+    if (err) {
+        console.log(err);
+        return
+    }
+    //parse JSON
+    const info = JSON.parse(data)
+    console.log(info);
+});
+
+*/

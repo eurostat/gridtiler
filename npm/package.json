@@ -2,17 +2,6 @@
   "name": "gridtiler",
   "version": "0.0.1",
   "description": "Tiling gridded data stored in tabular format",
-  "main": "src/index.js",
-  "bin": {
-    "gridtiler": "bin/gridtiler"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eurostat/gridtiler.git"
-  },
   "keywords": [
     "grid",
     "tiling",
@@ -20,14 +9,57 @@
     "tabular",
     "statistics"
   ],
+  "homepage": "https://github.com/eurostat/gridtiler#readme",
   "author": "Julien Gaffuri",
-  "license": "EUPL 1.2",
+  "license": "EUPL-1.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eurostat/gridtiler.git"
+  },
   "bugs": {
     "url": "https://github.com/eurostat/gridtiler/issues"
   },
-  "homepage": "https://github.com/eurostat/gridtiler#readme",
+  "type": "module",
+  "main": "dist/gridtiler.min.js",
+  "module": "dist/gridtiler.min.js",
+  "exports": {
+    "umd": "./dist/gridtiler.min.js",
+    "default": "./src/index.js"
+  },
+  "scripts": {
+    "start": "export NODE_OPTIONS=--openssl-legacy-provider && webpack --config webpack.config.dev.cjs",
+    "start-dev": "webpack --config webpack.config.dev.cjs",
+    "server": "webpack serve -c webpack.config.dev.js --static ./",
+    "doc": "./node_modules/.bin/jsdoc src/ src/dataset src/legend src/style -d docs/jsdoc",
+    "build": "webpack --config webpack.config.prod.cjs",
+    "test": "jest",
+    "gridtiler": "node bin/gridtiler"
+  },
+  "files": [
+    "bin/*",
+    "dist/**/*.js",
+    "src/**/*.js"
+  ],
+  "bin": {
+    "gridtiler": "bin/gridtiler"
+  },
   "dependencies": {
     "commander": "2",
-    "d3-fetch": "^3.0.1"
+    "fast-csv": "^4.3.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/runtime": "^7.12.1",
+    "babel-loader": "^8.1.0",
+    "jest": "^26.6.1",
+    "jshint": "^2.12.0",
+    "prettier": "2.8.8",
+    "puppeteer": "^9.1.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.11.1",
+    "webpack-livereload-plugin": "^3.0.2"
   }
 }

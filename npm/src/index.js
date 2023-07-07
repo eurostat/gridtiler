@@ -8,19 +8,38 @@
 //https://github.com/topojson/topojson-server/tree/master
 
 
+//export {default as tiling} from "./tiling.js";
 
-//import { csv } from 'd3-fetch'
+export const tiling = function(input, output, info) {
+    console.log("hello world !!!")
+    console.log(input)
+}
 
-const d3f = import('d3-fetch')
-//Promise.all().then(write).catch(abort);
-//https://javascript.info/modules-dynamic-imports
+
+/*
+const fs = require('fs')
+const csv = require('fast-csv');
 
 exports.doTiling = (input, output, info) => {
 
-    console.log(input)
-    console.log(d3f)
+    const data = []
+
+    fs.createReadStream(input)
+        .pipe(csv.parse({ headers: true }))
+        .on('error', error => console.error(error))
+        .on('data', row => {
+            data.push(row)
+        })
+        .on('end', () => {
+            console.log(data)
+        });
 
 }
+*/
+
+
+
+
 
 
 /*
