@@ -9,6 +9,7 @@ import { createReadStream, mkdirSync, writeFileSync } from 'fs';
 const getCellPos = c => { return { x: c.x, y: c.y } }
 const cleanCell = c => { delete c.x; delete c.y }
 
+const delim = ","
 
 export default function (opts) {
     console.log("hello world !!!")
@@ -100,38 +101,38 @@ export default function (opts) {
                     c.y = y
                 }
 
-                /*
-                    // sort cells by x and y
-                    Collections.sort(cells_, new Comparator<Map<String, String>>() {
-                        @Override
-                        public int compare(Map<String, String> s1, Map<String, String> s2) {
-                            if (Integer.parseInt(s1.get("x")) < Integer.parseInt(s2.get("x")))
-                                return -1;
-                            if (Integer.parseInt(s1.get("x")) > Integer.parseInt(s2.get("x")))
-                                return 1;
-                            if (Integer.parseInt(s1.get("y")) < Integer.parseInt(s2.get("y")))
-                                return -1;
-                            if (Integer.parseInt(s1.get("y")) > Integer.parseInt(s2.get("y")))
-                                return 1;
-                            return 0;
-                        }
-                    });
-                    */
+                //sort cells
+                t.cells.sort(
+                    (c1, c2) => c1.x == c2.x ? c1.y - c2.y : c1.x - c2.x
+                )
 
                 // save as csv file
                 const folder = opts.output + "/" + t.x + "/"
                 mkdirSync(folder, { recursive: true })
 
-                const data = `
-id,name,age
-1,Johny,45
-2,Mary,20
-`;
+                const data = []
 
-                writeFileSync(folder + t.y + ".csv", data, "utf-8", (err) => {
-                    //if (err) console.log(err);
-                    //else console.log("Data saved");
-                });
+                //header - force starting with x,y,
+                const keys = Object.keys(t.cells[0])
+                keys.splice(keys.indexOf("x"), 1);
+                keys.splice(keys.indexOf("y"), 1);
+                data.push("x" + delim + "y" + delim + keys.join(delim))
+
+                //add cell data
+                for (let c of t.cells) {
+                    const d_ = []
+                    //x,y first
+                    d_.push(c.x)
+                    d_.push(c.y)
+                    delete c.x
+                    delete c.y
+                    //stats after
+                    for (let k of keys) d_.push(c[k])
+                    data.push(d_.join(delim))
+                }
+
+                //write data
+                writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
 
             }
 
