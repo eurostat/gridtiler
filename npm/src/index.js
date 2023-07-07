@@ -2,17 +2,19 @@
 import { parse } from 'fast-csv';
 import { createReadStream, mkdirSync, writeFileSync } from 'fs';
 
-//export {default as tiling} from "./tiling.js";
-
-//function returning the cell coordinates
-//TODO: this should be exposed as a parameter
-const getCellPos = c => { return { x: c.x, y: c.y } }
-const cleanCell = c => { delete c.x; delete c.y }
-
-const delim = ","
 
 export default function (opts) {
     console.log("hello world !!!")
+
+    //function returning the cell coordinates
+    //See https://stackoverflow.com/questions/7650071/is-there-a-way-to-create-a-function-from-a-string-with-javascript
+    const getCellPos = Function("c", opts.positionFunction)
+
+    //cleaning function
+    const modifyCell = Function("c", opts.modFunction)
+
+    //the delimiter
+    const delim = opts.delim || ","
 
     //grid resolution
     const r = +opts.resolutionGeo
@@ -93,8 +95,8 @@ export default function (opts) {
                     if (y > opts.tileSizeCell - 1)
                         console.error("Too high value: " + y + " >" + (opts.tileSizeCell - 1));
 
-                    //clean
-                    cleanCell(c)
+                    //modify
+                    modifyCell(c)
 
                     // store x,y values
                     c.x = x
