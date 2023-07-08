@@ -33,7 +33,17 @@ Run `gridtiler --help` to show the help or see here:
 
 ### Default
 
-TODO: CSV file with 
+
+```
+x,y,pop,type
+1000,1000,54654,A
+1010,1000,4554,B
+5000,1000,6434,C
+4150,2560,43,B
+4160,2560,43,A
+```
+
+TODO: CSV file with x,y columns
 
 ### Specify cell position
 
