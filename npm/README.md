@@ -33,6 +33,13 @@ Run `gridtiler --help` to show the help or see here:
 
 ### Default
 
+The default input format is a CSV file with the following specification:
+- One row per grid cell.
+- A **x** and **y** column containing the coordinates of the cell bottom left corner position in the grid CRS.
+- Other columns containing data of the grid cells, as many as necessary.
+- The order of the columns does not matter. For example, **y** column could be the last one.
+
+Here is an example, for a grid of resolution *10* with two data columns *pop* (numerical) and *type* (text):
 
 ```
 x,y,pop,type
@@ -43,7 +50,13 @@ x,y,pop,type
 4160,2560,43,A
 ```
 
-TODO: CSV file with x,y columns
+If this data is stored in a **grid.csv** file, run:
+
+`gridtiler -i grid.csv -r`
+
+in the folder where the *grid.csv* file is located to produce the tiled grid in a **out/** folder.
+
+
 
 ### Specify cell position
 
