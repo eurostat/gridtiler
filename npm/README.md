@@ -33,7 +33,7 @@ Run `gridtiler --help` to show the help or see here:
 
 ### Default
 
-The default input format is a CSV file with the following specification:
+The default input format is a CSV file with the following specifications:
 - One row per grid cell.
 - A **x** and **y** column containing the coordinates of the cell bottom left corner position in the grid CRS.
 - Other columns containing data of the grid cells, as many as necessary.
