@@ -61,7 +61,7 @@ Since the grid is located north and east of point *(1000,2000)*, this point coul
 
 ### Specify cell position
 
-When the input data does not provide explicit **x** and **y** columns for the bottom left position of each cell, the **positionFunction** parameter can be used to derive this position from cell data. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is return `return { x: c.x, y: c.y };` which simply returns the *x* and *y* columns of a cell *c*.
+When the input data does not provide explicit **x** and **y** columns for the bottom left position of each cell, the **positionFunction** parameter can be used to derive this position from cell data. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is `return { x: c.x, y: c.y };` which simply returns the *x* and *y* column values of a cell *c*.
 
 Examples:
 - If the bottom left coordinates are in two **posX** and **posY** columns, use: `--positionFunction "return { x: c.posX, y: c.posY };"`
