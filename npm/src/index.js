@@ -106,6 +106,9 @@ export default function (opts) {
                     // store x,y values
                     c.x = x
                     c.y = y
+
+                    //modify
+                    modifyCell(c)
                 }
 
                 //sort cells
@@ -127,8 +130,6 @@ export default function (opts) {
 
                 //add cell data
                 for (let c of t.cells) {
-                    //modify
-                    modifyCell(c)
 
                     const d_ = []
                     //x,y first

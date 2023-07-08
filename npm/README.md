@@ -59,7 +59,6 @@ in the folder where the *grid.csv* file is located to produce the tiled grid in 
 
 Since the grid is located north and east of point *(1000,2000)*, this point could be used as the grid origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
-
 ### Specify cell position
 
 When the input data does not provide explicit **x** and **y** columns for the bottom left position of each cell, the **positionFunction** parameter can be used to derive this position from cell data. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is `return { x: c.x, y: c.y };` which simply returns the *x* and *y* column values of a cell *c*.
@@ -70,11 +69,20 @@ Examples:
 
 ### Dealing with INSPIRE identifier
 
-In case the cell position is described as an INSPIRE identifier such as *CRS3035RES5000mN4585000E5265000* in a **ID** column, use the following parameter:
+If the cell is described with an INSPIRE identifier such as *CRS3035RES5000mN4585000E5265000* in a **GRD_ID** column, use the following parameter to extract the cell position:
 
-`--positionFunction "const a=c.ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"`
+`--positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"`
 
-which extract the cell position.
+This **GRD_ID** column may then be removed in the output tiles with:
 
-You could then remove this column in the output tiles with: `--modFunction "delete c.ID"`
+`--modFunction "delete c.GRD_ID"`
 
+Example: With European population grids from [Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use: `gridtiler -i ../assets/pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
+
+### Filtering and modifying
+
+Use the parameters **filterFunction** and **modFunction** to filter and modify the cells.
+
+For example, to select only the cells with a *type* value *A* or *B*, multiply the *pop* value by 1000 and add a new column *new* with the value 100, run:
+
+`gridtiler -i ../assets/grid.csv -r 10 --filterFunction "return c.type==='A' || c.type==='C'" --modFunction "c.pop*=1000;c.new=100"`
