@@ -16,6 +16,10 @@ import cmd from 'commander'
 import pkg from "../package.json" assert { type: "json" };
 
 //console.log("**********************")
+//const str = "CRS3035RES5000mN4585000E5265000"
+//const a = c.ID.split("N")[1].split("E"); return {x:a[1],y:a[0]}
+//console.log(a[1],a[0])
+//return
 
 //define command line parameters
 cmd

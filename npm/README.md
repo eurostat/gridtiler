@@ -68,6 +68,13 @@ Examples:
 - If the bottom left coordinates are in two **posX** and **posY** columns, use: `--positionFunction "return { x: c.posX, y: c.posY };"`
 - If the cells position is the position of its center in two columns **xCentre** and **yCentre**, and their resolution is **1000**, use: `--positionFunction "return { x: c.xCentre - 500, y: c.yCentre - 500 };"` which translates the centre position toward the bottom left corner.
 
-### Dealing with INSPIRE cell ID
+### Dealing with INSPIRE identifier
 
-TODO: show example
+In case the cell position is described as an INSPIRE identifier such as *CRS3035RES5000mN4585000E5265000* in a **ID** column, use the following parameter:
+
+`--positionFunction "const a=c.ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"`
+
+which extract the cell position.
+
+You could also remove this columns with: `--modFunction "delete c.ID"`
+
