@@ -35,9 +35,9 @@ Run `gridtiler --help` to show the help or see here:
 
 The default input format is a CSV file with the following specifications:
 - One row per grid cell.
-- A **x** and **y** column containing the coordinates of the cell bottom left corner position in the grid CRS.
-- Other columns containing data of the grid cells, as many as necessary.
-- The order of the columns does not matter. For example, **y** column could be the last one.
+- A **x** and **y** columns with the coordinates of the cell bottom left corner position in the grid CRS.
+- Other columns with data of the grid cells, as many as necessary.
+- The order of the columns does not matter. For example, the **y** column could be the last one.
 
 Here is an example, for a grid of resolution *10* with two data columns *pop* (numerical) and *type* (text):
 
