@@ -65,7 +65,7 @@ When the input data does not provide explicit **x** and **y** columns for the bo
 
 Examples:
 - If the bottom left coordinates are in two **posX** and **posY** columns, use: `--positionFunction "return { x: c.posX, y: c.posY };"`
-- If the cells position is the position of its center in two columns **xCentre** and **yCentre**, and their resolution is **1000**, use: `--positionFunction "return { x: c.xCentre - 500, y: c.yCentre - 500 };"` which translate the centre position toward the bottom left corner.
+- If the cells position is the position of its center in two columns **xCentre** and **yCentre**, and their resolution is **1000**, use: `--positionFunction "return { x: c.xCentre - 500, y: c.yCentre - 500 };"` which translates the centre position toward the bottom left corner.
 
 ### Dealing with INSPIRE cell ID
 
