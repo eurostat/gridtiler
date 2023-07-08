@@ -1,3 +1,3 @@
-# GridTiler
+# GridTiler in javascript
 
 See [here](../).

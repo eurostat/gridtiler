@@ -1,4 +1,4 @@
-# GridTiler - in java
+# GridTiler in java
 
 Two classes are available from [JGiscoTools](https://github.com/eurostat/JGiscoTools) library.
 

@@ -15,7 +15,7 @@ Produce tiled grids in [tiled grid format](https://github.com/eurostat/gridviz/b
 
 ## Documentation
 
-Run `gridtiler --help` to show the help or see here:
+Run `gridtiler --help` to show the help, or see there:
 
 | Parameter | Required | Description | Default value |
 | ------------- | ------------- |-------------| ------|
@@ -60,15 +60,15 @@ If this data is stored in a **grid.csv** file, run:
 
 in the folder where the *grid.csv* file is located to produce the tiled grid in a **out/** folder.
 
-Since the grid is located north and east of point *(1000,2000)*, this point could be used as the grid origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
+Since the grid is located north and east of point *(1000,2000)*, this point could be used as an origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
 ### Specify cell position
 
-When the input data does not provide explicit **x** and **y** columns for the bottom left position of each cell, the **positionFunction** parameter can be used to derive this position from cell data. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is `return { x: c.x, y: c.y };` which simply returns the *x* and *y* column values of a cell *c*.
+When the input data does not provide explicit **x** and **y** columns for the bottom left position of each cell, the **positionFunction** parameter can be used to derive this position from other cell data. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is `return { x: c.x, y: c.y };` which simply returns the *x* and *y* column values of a cell *c*.
 
 Examples:
 - If the bottom left coordinates are in two **posX** and **posY** columns, use: `--positionFunction "return { x: c.posX, y: c.posY };"`
-- If the cells position is the position of its center in two columns **xCentre** and **yCentre**, and their resolution is **1000**, use: `--positionFunction "return { x: c.xCentre - 500, y: c.yCentre - 500 };"` which translates the centre position toward the bottom left corner.
+- If the cells position is the position of its center in two columns **xCentre** and **yCentre**, and the grid resolution is **1000**, use: `--positionFunction "return { x: c.xCentre - 500, y: c.yCentre - 500 };"` which translates the centre position toward the bottom left corner.
 
 ### Dealing with INSPIRE identifier
 
@@ -80,7 +80,7 @@ This **GRD_ID** column may then be removed in the output tiles with:
 
 `--modFunction "delete c.GRD_ID"`
 
-Example: With European population grids from [Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use:
+Example: With European population grids downloaded from [Eurostat grids page](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use:
 
 `gridtiler -i ../assets/pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
 
