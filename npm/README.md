@@ -71,4 +71,3 @@ Examples:
 ### Dealing with INSPIRE cell ID
 
 TODO: show example
-
