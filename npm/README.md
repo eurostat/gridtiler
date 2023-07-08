@@ -58,11 +58,14 @@ in the folder where the *grid.csv* file is located to produce the tiled grid in 
 
 Since the grid is located north and east of point *(1000,2000)*, this point could be used as the grid origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
-BUG HERE !!!
 
 ### Specify cell position
 
-TODO: case were filed is not x,y. Case where position is upper left corner.
+When the input data do not provide explicit **x** and **y** values for the bottom left position of each cell, the **positionFunction** parameter can be used. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is return `return { x: c.x, y: c.y };` which simply returns the *x* and *y* columns of a cell *c*.
+
+Examples:
+- If the bottom left coordinates are in two **posX** and **posY** columns, use: `--positionFunction "return { x: c.posX, y: c.posY };"`
+- If the cells position is the position of its center in two columns **xCentre** and **yCentre**, and their resolution is **1000**, use: `--positionFunction "return { x: c.xCentre - 500, y: c.yCentre - 500 };"` which translate the centre position toward the bottom left corner.
 
 ### Dealing with INSPIRE cell ID
 
