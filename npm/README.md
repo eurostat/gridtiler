@@ -76,5 +76,5 @@ In case the cell position is described as an INSPIRE identifier such as *CRS3035
 
 which extract the cell position.
 
-You could also remove this columns with: `--modFunction "delete c.ID"`
+You could then remove this column in the output tiles with: `--modFunction "delete c.ID"`
 
