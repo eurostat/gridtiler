@@ -43,19 +43,20 @@ Here is an example, for a grid of resolution *10* with two data columns *pop* (n
 
 ```
 x,y,pop,type
-1000,1000,54654,A
-1010,1000,4554,B
-5000,1000,6434,C
+1000,2000,54654,A
+1010,2000,4554,B
+5000,2000,6434,C
 4150,2560,43,B
 4160,2560,43,A
 ```
 
 If this data is stored in a **grid.csv** file, run:
 
-`gridtiler -i grid.csv -r`
+`gridtiler -i grid.csv -r 10`
 
 in the folder where the *grid.csv* file is located to produce the tiled grid in a **out/** folder.
 
+Since the grid is located north and east of point *(1000,2000)*, this point could be used as the grid origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
 
 ### Specify cell position
