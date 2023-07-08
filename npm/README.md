@@ -1,3 +1,3 @@
 # GridTiler
 
-See [here](../README.md).
+See [here](../).
