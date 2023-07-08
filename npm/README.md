@@ -1,7 +1,10 @@
-# GridTiler - in javascript
+# GridTiler
 
 ![npm](https://img.shields.io/npm/v/gridtiler)
 ![license](https://img.shields.io/badge/license-EUPL-success)
+
+Produce tiled grids in [tiled grid format](https://github.com/eurostat/gridviz/blob/master/docs/tiledformat.md) for web mapping applications such as [GridViz](https://github.com/eurostat/gridviz).
+
 
 ## Installation
 
@@ -77,7 +80,9 @@ This **GRD_ID** column may then be removed in the output tiles with:
 
 `--modFunction "delete c.GRD_ID"`
 
-Example: With European population grids from [Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use: `gridtiler -i ../assets/pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
+Example: With European population grids from [Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use:
+
+`gridtiler -i ../assets/pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
 
 ### Filtering and modifying
 
@@ -86,3 +91,23 @@ Use the parameters **filterFunction** and **modFunction** to filter and modify t
 For example, to select only the cells with a *type* value *A* or *B*, multiply the *pop* value by 1000 and add a new column *new* with the value 100, run:
 
 `gridtiler -i ../assets/grid.csv -r 10 --filterFunction "return c.type==='A' || c.type==='C'" --modFunction "c.pop*=1000;c.new=100"`
+
+## Other resources
+
+Grid tiling in: 
+- [Python](/py)
+- [Java](/java)
+
+
+## About
+
+|            |             |
+| -------------- | ----------- |
+| _contributors_ | [<img src="https://github.com/jgaffuri.png" height="40" />](https://github.com/jgaffuri) [<img src="https://github.com/JoeWDavies.png" height="40" />](https://github.com/JoeWDavies) |
+| _version_      | See [npm](https://www.npmjs.com/package/gridtiler?activeTab=versions)      |
+| _status_       | Since 2023        |
+| _license_      | [EUPL 1.2](LICENSE)        |
+
+### Support and contribution
+
+Feel free to [ask support](https://github.com/eurostat/gridtiler/issues/new), fork the project or simply star it (it's always a pleasure).
