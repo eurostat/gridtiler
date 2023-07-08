@@ -15,6 +15,8 @@ import gtil from 'gridtiler'
 import cmd from 'commander'
 import pkg from "../package.json" assert { type: "json" };
 
+//console.log("**********************")
+
 //define command line parameters
 cmd
     .version(pkg.version)
