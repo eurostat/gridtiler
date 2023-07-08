@@ -4,13 +4,17 @@ import { createReadStream, mkdirSync, writeFileSync } from 'fs';
 
 
 export default function (opts) {
-    console.log("hello world !!!")
+    //console.log("hello world !!!")
 
     //function returning the cell coordinates
     //See https://stackoverflow.com/questions/7650071/is-there-a-way-to-create-a-function-from-a-string-with-javascript
     const getCellPos = Function("c", opts.positionFunction)
 
-    //cleaning function
+
+    //filtering function
+    const filterCell = Function("c", opts.filterFunction)
+
+    //modification function
     const modifyCell = Function("c", opts.modFunction)
 
     //the delimiter
@@ -42,6 +46,10 @@ export default function (opts) {
 
             // go through cell stats and assign it to a tile
             for (let c of cells) {
+
+                //check if cell should be filtered
+                const keep = filterCell(c)
+                if (!keep) continue
 
                 //get cell coordinates
                 const pos = getCellPos(c), x = pos.x, y = pos.y
@@ -95,9 +103,6 @@ export default function (opts) {
                     if (y > opts.tileSizeCell - 1)
                         console.error("Too high value: " + y + " >" + (opts.tileSizeCell - 1));
 
-                    //modify
-                    modifyCell(c)
-
                     // store x,y values
                     c.x = x
                     c.y = y
@@ -122,6 +127,9 @@ export default function (opts) {
 
                 //add cell data
                 for (let c of t.cells) {
+                    //modify
+                    modifyCell(c)
+
                     const d_ = []
                     //x,y first
                     d_.push(c.x)

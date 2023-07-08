@@ -24,7 +24,8 @@ Run `gridtiler --help` to show the help or see here:
 | -x, --originPointX <number> | | The X coordinate of the tiling scheme origin point (bottom left). |0  |
 | -y, --originPointY <number> | | The Y coordinate of the tiling scheme origin point (bottom left). |0  |
 | -p, --positionFunction <string> | | A javascript function body returning the position of an input cell c as a {x,y} object. | "return { x: c.x, y: c.y };" |
-| -m, --modFunction <string> | | A javascript function body modifying an input cell c before writing a cell data. | { delete c.x; delete c.y; } |
+| -f, --filterFunction <string> | | A javascript function body specifying if a cell should be filtered or kept. Return true to keep, false to filter out. | "return true;" |
+| -m, --modFunction <string> | | A javascript function body modifying an input cell c before writing a cell data. This may be used for example to remove unecessary columns, or computing new ones from the combination of others. | "" |
 | -d, --delim <number> | | The CSV delimiter. | "," |
 | -V, --version | | Output the version number. |  |
 | -h, --help | | output usage information |  |
