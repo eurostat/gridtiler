@@ -58,6 +58,7 @@ in the folder where the *grid.csv* file is located to produce the tiled grid in 
 
 Since the grid is located north and east of point *(1000,2000)*, this point could be used as the grid origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
+BUG HERE !!!
 
 ### Specify cell position
 
