@@ -62,7 +62,7 @@ in the folder where the *grid.csv* file is located to produce the tiled grid in 
 
 Since the grid is located north and east of point *(1000,2000)*, this point could be used as an origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
-### Specify cell position
+### Custom cell position
 
 When the input data does not provide explicit **x** and **y** columns for the bottom left position of each cell, the **positionFunction** parameter can be used to derive this position from other cell data. This parameter is a javascript function which returns the bottom left position of a cell. By default, this function body is `return { x: c.x, y: c.y };` which simply returns the *x* and *y* column values of a cell *c*.
 
