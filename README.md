@@ -8,7 +8,7 @@ Produce tiled grids in [tiled grid format](https://github.com/eurostat/gridviz/b
 
 ## Installation
 
-- Install Node.js, version >=14
+- Install [Node.js](https://nodejs.org/), version >=14
 - Run `npm install gridtiler -g` (with `sudo` for Linux users)
 
 `gridtiler` command is now available.
