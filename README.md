@@ -72,7 +72,7 @@ Examples:
 
 ### Dealing with INSPIRE identifier
 
-If the cell is described with an INSPIRE identifier such as *CRS3035RES5000mN4585000E5265000* in a **GRD_ID** column, use the following parameter to extract the cell position:
+If the cell is described with an INSPIRE identifier (such as *CRS3035RES5000mN4585000E5265000*) in a **GRD_ID** column, use the following parameter to extract the cell position:
 
 `--positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"`
 
