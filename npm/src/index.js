@@ -155,8 +155,8 @@ export default function (opts) {
             for (let t of tiles) {
                 xMin = Math.min(xMin, t.x)
                 xMax = Math.max(xMax, t.x)
-                yMin = Math.min(yMin, t.x)
-                yMax = Math.max(yMax, t.x)
+                yMin = Math.min(yMin, t.y)
+                yMax = Math.max(yMax, t.y)
             }
 
             //create tiling info object
