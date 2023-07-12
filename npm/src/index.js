@@ -26,6 +26,10 @@ export default function (opts) {
     // compute tile size, in geo unit
     const tileSizeM = r * +opts.tileSizeCell;
 
+    //ensure those are numbers
+    opts.originPointX = +opts.originPointX
+    opts.originPointY = +opts.originPointY
+
     console.log("Load CSV data...")
     //https://blog.logrocket.com/complete-guide-csv-files-node-js/
     const cells = []
@@ -55,8 +59,8 @@ export default function (opts) {
                 const pos = getCellPos(c), x = pos.x, y = pos.y
 
                 // find tile position
-                const xt = Math.floor((x - +opts.originPointX) / tileSizeM);
-                const yt = Math.floor((y - +opts.originPointY) / tileSizeM);
+                const xt = Math.floor((x - opts.originPointX) / tileSizeM);
+                const yt = Math.floor((y - opts.originPointY) / tileSizeM);
 
                 // get tile. If it does not exists, create it.
                 const tileId = xt + "_" + yt;
@@ -170,16 +174,16 @@ export default function (opts) {
                 },
                 resolutionGeo: r,
                 tilingBounds: {
-                    yMin: yMin,
-                    yMax: yMax,
-                    xMax: xMax,
-                    xMin: xMin
+                    yMin: +yMin,
+                    yMax: +yMax,
+                    xMax: +xMax,
+                    xMin: +xMin
                 }
             }
 
             //suggest x,y parameters
-            if (xMin != 0) console.log("   Parameter: -x " + (+opts.originPointX + xMin * tileSizeM) + " could be used")
-            if (yMin != 0) console.log("   Parameter: -y " + (+opts.originPointY + yMin * tileSizeM) +" could be used")
+            if (xMin != 0) console.log("   Parameter: -x " + (opts.originPointX + xMin * tileSizeM) + " could be used")
+            if (yMin != 0) console.log("   Parameter: -y " + (opts.originPointY + yMin * tileSizeM) +" could be used")
 
             //save tiling info object
             const jsonData = JSON.stringify(info, null, 3);
