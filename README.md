@@ -82,7 +82,7 @@ This **GRD_ID** column may then be removed in the output tiles with:
 
 Example: With European population grids downloaded from [Eurostat grids page](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use:
 
-`gridtiler -i ../assets/pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
+`gridtiler -i pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
 
 ### Filtering and modifying
 
@@ -90,7 +90,7 @@ Use the parameters **filterFunction** and **modFunction** to filter and modify t
 
 For example, to select only the cells with a *type* value *A* or *B*, multiply the *pop* value by 1000 and add a new column *new* with the value 100, run:
 
-`gridtiler -i ../assets/grid.csv -r 10 --filterFunction "return c.type==='A' || c.type==='C'" --modFunction "c.pop*=1000;c.new=100"`
+`gridtiler -i grid.csv -r 10 --filterFunction "return c.type==='A' || c.type==='C'" --modFunction "c.pop*=1000;c.new=100"`
 
 ## Other resources
 

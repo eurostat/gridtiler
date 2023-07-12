@@ -178,8 +178,8 @@ export default function (opts) {
             }
 
             //suggest x,y parameters
-            if (xMin != 0) console.log("   Parameter: -x " + (xO + xMin * tileSizeM) + " could be used")
-            if (yMin != 0) console.log("   Parameter: -y " + (yO + yMin * tileSizeM) + " could be used")
+            if (xMin != 0) console.log("   Parameter: -x " + (xO + xMin * tileSizeM) + " may be used")
+            if (yMin != 0) console.log("   Parameter: -y " + (yO + yMin * tileSizeM) + " may be used")
 
             //save tiling info object
             const jsonData = JSON.stringify(info, null, 3);
