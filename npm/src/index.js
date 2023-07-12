@@ -9,7 +9,7 @@ export default function (opts) {
     const delim = opts.delim || ","
 
     //grid resolution
-    const r = +opts.resolutionGeo
+    let r = +opts.resolutionGeo
 
     // compute tile size, in geo unit
     const tileSizeM = r * +opts.tileSizeCell;
@@ -58,10 +58,57 @@ export default function (opts) {
             }
 
 
-            //TODO compute aggregation
+            //compute aggregation
             if (opts.aggregationFactor) {
-                //TODO index cells
-                //TODO aggregate cells
+
+                //target resolution
+                const tr = +opts.aggregationFactor * r
+
+                console.log("Compute aggregation to resolution " + tr + "...")
+
+                //index cells
+                // create dictionary xA -> yA -> cell
+                const aggCells = {};
+                for (let c of cells) {
+                    //compute coordinates of the aggregated cell
+                    const xa = tr * Math.floor(c.x / tr)
+                    const ya = tr * Math.floor(c.y / tr)
+                    delete c.x; delete c.y
+
+                    //add c to aggregated cell cA. If not there, create a new one.
+                    let cA_ = aggCells[xa]
+                    if (!cA_) { cA_ = {}; aggCells[xa] = cA_ }
+                    let cA = cA_[ya]
+                    if (!cA) { cA = { x: xa, y: ya, cells: [] }; }
+                    cA.cells.push(c)
+                }
+
+                //aggregation function
+                //TODO handle other cases: average, mode, etc
+                const aggregateSum = (vs) => { let sum = 0; for (let v of vs) { sum += +v; } return sum }
+
+                //aggregate cell values
+                const keys = Object.keys(cells[0])
+                cells = []
+                for (let cA_ of Object.values(aggCells)) {
+                    for (let cA of Object.values(cA_)) {
+                        //compute aggregates values
+                        for (let k of keys) {
+                            //get list of values to aggregate
+                            const vs = []
+                            for (let c of cA.cells) vs.push(c[k])
+                            //compute and set aggregated value
+                            cA[k] = aggregateSum(vs)
+                        }
+                        cA.cells = []; delete cA.cells
+                        cells.push(cA)
+                    }
+                }
+
+                //use new resolution
+                r = tr
+
+                console.log("   " + cells.length + " aggregated cells.")
             }
 
 
