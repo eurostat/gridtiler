@@ -4,18 +4,6 @@ import { createReadStream, mkdirSync, writeFileSync } from 'fs';
 
 
 export default function (opts) {
-    //console.log("hello world !!!")
-
-    //function returning the cell coordinates
-    //See https://stackoverflow.com/questions/7650071/is-there-a-way-to-create-a-function-from-a-string-with-javascript
-    const getCellPos = Function("c", opts.positionFunction)
-
-
-    //filtering function
-    const filterCell = Function("c", opts.filterFunction)
-
-    //modification function
-    const modifyCell = Function("c", opts.modFunction)
 
     //the delimiter
     const delim = opts.delim || ","
@@ -27,12 +15,12 @@ export default function (opts) {
     const tileSizeM = r * +opts.tileSizeCell;
 
     //ensure those are numbers
-    opts.originPointX = +opts.originPointX
-    opts.originPointY = +opts.originPointY
+    const xO = +opts.originPointX
+    const yO = +opts.originPointY
 
     console.log("Load CSV data...")
     //https://blog.logrocket.com/complete-guide-csv-files-node-js/
-    const cells = []
+    let cells = []
     createReadStream(opts.input)
         .pipe(parse({ headers: true }))
         .on('error', error => console.error(error))
@@ -43,24 +31,49 @@ export default function (opts) {
 
             console.log("   " + cells.length + " cells loaded")
 
+
+            console.log("Filter cells...")
+            {
+                const filterCell = Function("c", opts.filterFunction)
+                cells = cells.filter(filterCell)
+            }
+            console.log("   " + cells.length + " cells kept")
+
+
+            console.log("Get cell positions...")
+            {
+                const getCellPos = Function("c", opts.positionFunction)
+                for (let c of cells) {
+                    const pos = getCellPos(c)
+                    c.x = pos.x
+                    c.y = pos.y
+                }
+            }
+
+
+            console.log("Modify cells...")
+            {
+                const modifyCell = Function("c", opts.modFunction)
+                for (let c of cells) modifyCell(c)
+            }
+
+
+            //TODO compute aggregation
+            if (opts.aggregationFactor) {
+                //TODO index cells
+                //TODO aggregate cells
+            }
+
+
             console.log("Index cells by tile")
 
             // create tile dictionary tileId -> tile
             const tiles_ = {};
-
-            // go through cell stats and assign it to a tile
             for (let c of cells) {
 
-                //check if cell should be filtered
-                const keep = filterCell(c)
-                if (!keep) continue
-
-                //get cell coordinates
-                const pos = getCellPos(c), x = pos.x, y = pos.y
-
                 // find tile position
-                const xt = Math.floor((x - opts.originPointX) / tileSizeM);
-                const yt = Math.floor((y - opts.originPointY) / tileSizeM);
+                const xt = Math.floor((c.x - xO) / tileSizeM);
+                const yt = Math.floor((c.y - yO) / tileSizeM);
 
                 // get tile. If it does not exists, create it.
                 const tileId = xt + "_" + yt;
@@ -72,47 +85,30 @@ export default function (opts) {
 
                 // add cell to tile
                 tile.cells.push(c);
-
             }
 
             const tiles = Object.values(tiles_);
             console.log("   " + tiles.length + " tiles created.")
 
             console.log("Save tiles...")
-
             for (let t of tiles) {
 
                 // prepare tile cells for export
                 for (let c of t.cells) {
 
-                    //get cell coordinates
-                    const pos = getCellPos(c)
-                    let x = pos.x, y = pos.y
-
-                    //get cell position within its tile
-                    x -= opts.originPointX
-                    y -= opts.originPointY
-                    x = x / r - t.x * opts.tileSizeCell;
-                    y = y / r - t.y * opts.tileSizeCell;
-                    x = Math.floor(x)
-                    y = Math.floor(y)
+                    //compute cell position within its tile
+                    c.x = Math.floor((c.x - xO) / r - t.x * opts.tileSizeCell)
+                    c.y = Math.floor((c.y - yO) / r - t.y * opts.tileSizeCell)
 
                     // check x,y values. Should be within [0,tileResolutionPix-1]
-                    if (x < 0)
-                        console.error("Too low value: " + x + " <0");
-                    if (y < 0)
-                        console.error("Too low value: " + y + " <0");
-                    if (x > opts.tileSizeCell - 1)
-                        console.error("Too high value: " + x + " >" + (opts.tileSizeCell - 1));
-                    if (y > opts.tileSizeCell - 1)
-                        console.error("Too high value: " + y + " >" + (opts.tileSizeCell - 1));
-
-                    // store x,y values
-                    c.x = x
-                    c.y = y
-
-                    //modify
-                    modifyCell(c)
+                    if (c.x < 0)
+                        console.error("Too low value: " + c.x + " <0");
+                    if (c.y < 0)
+                        console.error("Too low value: " + c.y + " <0");
+                    if (c.x > opts.tileSizeCell - 1)
+                        console.error("Too high value: " + c.x + " >" + (opts.tileSizeCell - 1));
+                    if (c.y > opts.tileSizeCell - 1)
+                        console.error("Too high value: " + c.y + " >" + (opts.tileSizeCell - 1));
                 }
 
                 //sort cells
@@ -169,8 +165,8 @@ export default function (opts) {
                 crs: opts.crs,
                 tileSizeCell: opts.tileSizeCell,
                 originPoint: {
-                    x: opts.originPointX,
-                    y: opts.originPointY
+                    x: xO,
+                    y: yO
                 },
                 resolutionGeo: r,
                 tilingBounds: {
@@ -182,8 +178,8 @@ export default function (opts) {
             }
 
             //suggest x,y parameters
-            if (xMin != 0) console.log("   Parameter: -x " + (opts.originPointX + xMin * tileSizeM) + " could be used")
-            if (yMin != 0) console.log("   Parameter: -y " + (opts.originPointY + yMin * tileSizeM) +" could be used")
+            if (xMin != 0) console.log("   Parameter: -x " + (xO + xMin * tileSizeM) + " could be used")
+            if (yMin != 0) console.log("   Parameter: -y " + (yO + yMin * tileSizeM) + " could be used")
 
             //save tiling info object
             const jsonData = JSON.stringify(info, null, 3);
