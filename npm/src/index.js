@@ -5,19 +5,6 @@ import { createReadStream, mkdirSync, writeFileSync } from 'fs';
 
 export default function (opts) {
 
-    //the delimiter
-    const delim = opts.delim || ","
-
-    //grid resolution
-    let r = +opts.resolutionGeo
-
-    // compute tile size, in geo unit
-    const tileSizeM = r * +opts.tileSizeCell;
-
-    //ensure those are numbers
-    const xO = +opts.originPointX
-    const yO = +opts.originPointY
-
     console.log("Load CSV data...")
     //https://blog.logrocket.com/complete-guide-csv-files-node-js/
     let cells = []
@@ -57,9 +44,11 @@ export default function (opts) {
                 for (let c of cells) modifyCell(c)
             }
 
+            //grid resolution
+            let r = +opts.resolutionGeo
 
             //compute aggregation
-            if (opts.aggregationFactor) {
+            if (opts.aggregationFactor && +opts.aggregationFactor > 1) {
 
                 //target resolution
                 const tr = +opts.aggregationFactor * r
@@ -79,7 +68,7 @@ export default function (opts) {
                     let cA_ = aggCells[xa]
                     if (!cA_) { cA_ = {}; aggCells[xa] = cA_ }
                     let cA = cA_[ya]
-                    if (!cA) { cA = { x: xa, y: ya, cells: [] }; }
+                    if (!cA) { cA = { x: xa, y: ya, cells: [] }; cA_[ya] = cA }
                     cA.cells.push(c)
                 }
 
@@ -111,8 +100,14 @@ export default function (opts) {
                 console.log("   " + cells.length + " aggregated cells.")
             }
 
-
             console.log("Index cells by tile")
+
+            // compute tile size, in geo unit
+            const tileSizeM = r * +opts.tileSizeCell;
+
+            //ensure those are numbers
+            const xO = +opts.originPointX
+            const yO = +opts.originPointY
 
             // create tile dictionary tileId -> tile
             const tiles_ = {};
@@ -138,6 +133,10 @@ export default function (opts) {
             console.log("   " + tiles.length + " tiles created.")
 
             console.log("Save tiles...")
+
+            //the delimiter
+            const delim = opts.delim || ","
+
             for (let t of tiles) {
 
                 // prepare tile cells for export
