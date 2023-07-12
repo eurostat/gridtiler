@@ -177,6 +177,10 @@ export default function (opts) {
                 }
             }
 
+            //suggest x,y parameters
+            if (xMin != 0) console.log("   Parameter: -x " + (+opts.originPointX + xMin * tileSizeM) + " could be used")
+            if (yMin != 0) console.log("   Parameter: -y " + (+opts.originPointY + yMin * tileSizeM) +" could be used")
+
             //save tiling info object
             const jsonData = JSON.stringify(info, null, 3);
             mkdirSync(opts.output, { recursive: true })
