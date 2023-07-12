@@ -14,10 +14,10 @@ gridtiler -i ../assets/pop_2018_10km.csv -r 10000 --crs 3035 -t 128 -x 0 -y 0
 import gtil from 'gridtiler'
 import cmd from 'commander'
 
-//import pkg from "../package.json" assert { type: "json" };
+import pkg from "../package.json" assert { type: "json" };
 //import pkg from "../package.json" with { type: "json" };
-import { readFileSync } from 'fs';
-const pkg = JSON.parse(readFileSync("package.json"));
+//import { readFileSync } from 'fs';
+//const pkg = JSON.parse(readFileSync("package.json"));
 
 //define command line parameters
 cmd
