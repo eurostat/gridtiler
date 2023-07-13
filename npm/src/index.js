@@ -18,14 +18,18 @@ export default function (opts) {
 
             console.log("   " + cells.length + " cells loaded")
 
-
-            console.log("Filter cells...")
-            {
+            if (opts.filterFunction) {
+                console.log("Filter cells...")
                 const filterCell = Function("c", opts.filterFunction)
                 cells = cells.filter(filterCell)
+                console.log("   " + cells.length + " cells kept")
             }
-            console.log("   " + cells.length + " cells kept")
 
+            if (opts.modFunction) {
+                console.log("Modify cells...")
+                const modifyCell = Function("c", opts.modFunction)
+                for (let c of cells) modifyCell(c)
+            }
 
             console.log("Get cell positions...")
             {
@@ -37,12 +41,6 @@ export default function (opts) {
                 }
             }
 
-
-            console.log("Modify cells...")
-            {
-                const modifyCell = Function("c", opts.modFunction)
-                for (let c of cells) modifyCell(c)
-            }
 
             //grid resolution
             let r = +opts.resolutionGeo

@@ -27,8 +27,8 @@ Run `gridtiler --help` to show the help, or see there:
 | -y, --originPointY <number> | | The Y coordinate of the tiling scheme origin point (bottom left). |0  |
 | -a, --aggregationFactor <integer> | | In case there is the need for aggregating the cells to lower resolution, specify this parameter. The resolution of the aggregated grid will be this parameter time the input resolution *resolutionGeo*. |  |
 | -p, --positionFunction <string> | | A javascript function body returning the position of an input cell c as a {x,y} object. | "return { x: c.x, y: c.y };" |
-| -f, --filterFunction <string> | | A javascript function body specifying if a cell should be filtered or kept. Return true to keep, false to filter out. | "return true;" |
-| -m, --modFunction <string> | | A javascript function body modifying an input cell c before writing a cell data. This may be used for example to remove unecessary columns, or computing new ones from the combination of others. | "" |
+| -f, --filterFunction <string> | | A javascript function body specifying if an input cell should be filtered or kept. Return true to keep, false to filter out. | "return true;" |
+| -m, --modFunction <string> | | A javascript function body modifying an input cell c. This may be used for example to remove unecessary columns, or computing new ones from the combination of others. This function applies after filtering. | "" |
 | -d, --delim <string> | | The CSV delimiter. | "," |
 | -c, --crs <EPSG code> | | EPSG code of the grid Coordinate Reference System. | "" |
 | -V, --version | | Show version number. |  |
