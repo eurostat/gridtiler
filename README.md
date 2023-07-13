@@ -85,6 +85,12 @@ Example: With European population grids downloaded from [Eurostat grids page](ht
 
 `gridtiler -i pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
 
+### Aggregation
+
+Gridtiler offers the possibility to aggregate grid cells to lower resolutions, on-the-fly, using the `-a, --aggregationFactor` parameter. The resolution of the target grid will be this parameter time the input grid resolution specified under `-r, --resolutionGeo` parameter. The tiling then applies on the aggregated grid.
+
+Example: The command `gridtiler -i pop_5000m.csv -r 5000 -a 4` aggregates the grid *pop_5000m.csv* from the input resolution *5000* to the resolution *5000 x 4 = 20000*.
+
 ### Filtering and modifying
 
 Use the parameters **filterFunction** and **modFunction** to filter and modify the cells.
