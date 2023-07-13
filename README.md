@@ -74,11 +74,13 @@ If the cell is described with an INSPIRE identifier (such as *CRS3035RES5000mN45
 
 Example: With European population grids downloaded from [Eurostat grids page](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use `gridtiler -i pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --modFunction "delete c.GRD_ID"`
 
-### Aggregation
+### Aggregation (sum)
 
 Gridtiler offers the possibility to aggregate grid cells to lower resolutions, on-the-fly, using the `-a, --aggregationFactor` parameter. The resolution of the target grid will be this parameter time the input grid resolution specified under `-r, --resolutionGeo` parameter. The tiling then applies on the aggregated grid.
 
 Example: The command `gridtiler -i pop_5000m.csv -r 5000 -a 4` aggregates the grid *pop_5000m.csv* from the input resolution *5000* to the resolution *5000 x 4 = 20000*.
+
+Note that currently only numerical columns can be aggregated, and the aggregation is computed as a sum. This aggregation may be extended to support other types of aggregations such as average, median, min, max, near or mode (for non-numerical values).
 
 ### Filtering and modifying
 
