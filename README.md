@@ -55,11 +55,7 @@ x,y,pop,type
 4160,2560,43,A
 ```
 
-If this data is stored in a **grid.csv** file, run:
-
-`gridtiler -i grid.csv -r 10`
-
-in the folder where the *grid.csv* file is located to produce the tiled grid in a **out/** folder.
+If this data is stored in a **grid.csv** file, simply run `gridtiler -i grid.csv -r 10` in the folder where the *grid.csv* file is located to produce the tiled grid in a **out/** folder.
 
 Since the grid is located north and east of point *(1000,2000)*, this point could be used as an origin point. Run `gridtiler -i grid.csv -r 10 -x 1000 -y 2000` to adapt this.
 
