@@ -22,14 +22,15 @@ Run `gridtiler --help` to show the help, or see there:
 | -i, --input <file> | X | Input CSV file. One row per cell. The file is expected to include two *x* and *y* columns for the coordinates of the lower left corner. If not, see *positionFunction* parameter. |  |
 | -o, --output <folder> | | output folder where to produce the tiled grid. | "out/" |
 | -r, --resolutionGeo <number> | X | The grid resolution, that is the size of a grid cell in the CRS unit. |  |
-| -c, --crs <EPSG code> | | EPSG code of the grid Coordinate Reference System. | "" |
-| -t, --tileSizeCell <number> | | The size of the tile in number of cells. | 128 |
+| -t, --tileSizeCell <integer> | | The size of the tile in number of cells. | 128 |
 | -x, --originPointX <number> | | The X coordinate of the tiling scheme origin point (bottom left). |0  |
 | -y, --originPointY <number> | | The Y coordinate of the tiling scheme origin point (bottom left). |0  |
+| -a, --aggregationFactor <integer> | | In case there is the need for aggregating the cells to lower resolution, specify this parameter. The resolution of the aggregated grid will be this parameter time the input resolution *resolutionGeo*. |  |
 | -p, --positionFunction <string> | | A javascript function body returning the position of an input cell c as a {x,y} object. | "return { x: c.x, y: c.y };" |
 | -f, --filterFunction <string> | | A javascript function body specifying if a cell should be filtered or kept. Return true to keep, false to filter out. | "return true;" |
 | -m, --modFunction <string> | | A javascript function body modifying an input cell c before writing a cell data. This may be used for example to remove unecessary columns, or computing new ones from the combination of others. | "" |
-| -d, --delim <number> | | The CSV delimiter. | "," |
+| -d, --delim <string> | | The CSV delimiter. | "," |
+| -c, --crs <EPSG code> | | EPSG code of the grid Coordinate Reference System. | "" |
 | -V, --version | | Show version number. |  |
 | -h, --help | | Show the help. |  |
 
