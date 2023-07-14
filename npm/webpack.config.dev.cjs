@@ -11,7 +11,11 @@ module.exports = {
     plugins: [new LiveReloadPlugin()],
     watch: true,
     devtool: 'inline-source-map',
-
+    resolve: {
+        fallback: {
+            "fs": false
+        },
+    },
     experiments: {
         asyncWebAssembly: true,
         //syncWebAssembly: true
