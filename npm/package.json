@@ -1,6 +1,6 @@
 {
   "name": "gridtiler",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Tiling gridded data stored in tabular format",
   "keywords": [
     "grid",

@@ -14,16 +14,17 @@ gridtiler -i ../assets/pop_2018_10km.csv -r 10000 --crs 3035 -t 128 -x 0 -y 0
 import gtil from 'gridtiler'
 import cmd from 'commander'
 
-import pkg from "../package.json" assert { type: "json" };
+
+//import pkg from "../package.json" assert { type: "json" };
 //import pkg from "../package.json" with { type: "json" };
 //import { readFileSync } from 'fs';
 //const pkg = JSON.parse(readFileSync("package.json"));
 
 //define command line parameters
 cmd
-    .version(pkg.version)
+    .version(process.env.npm_package_version)
     //.usage("[options] <[name=]file>…")
-    .description(pkg.description)
+    .description(process.env.npm_package_description)
     .option("-i, --input <file>", "input CSV file. One row per cell. The file is expected to include two 'x' and 'y' columns for the coordinates of the lower left corner. If not, see positionFunction parameter")
     .option("-o, --output <folder>", "output folder where to produce the tiled grid.", "out/")
     .option("-r, --resolutionGeo <number>", "The grid resolution, that is the size of a grid cell in the CRS unit.")
