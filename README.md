@@ -82,6 +82,22 @@ Example: The command `gridtiler -i pop_5000m.csv -r 5000 -a 4` aggregates the gr
 
 Note that currently grids with only **numerical** columns can be aggregated, and the aggregation is computed **as a sum**. This aggregation may be extended to support other types of aggregations such as average, median, min, max, near or mode (for non-numerical values).
 
+#### Tiled multi-resolution grid
+
+Computing aggregations with consecutive resolutions makes possible to produce a pyramid of multi-resolution tiled grids from a single high-resolution input grid. Such multi-resolution may then be used for efficient multi-scale visualisation for example with [GridViz](https://github.com/eurostat/gridviz/).
+
+For example, these commands produce tiled grid at various resolutions from 1km to 100km from a single input 1km resolution dataset `pop_2018_1km`:
+
+```
+gridtiler -i pop_2018_1km.csv -r 1000 -a 1 -o 1000m/
+gridtiler -i pop_2018_1km.csv -r 1000 -a 2 -o 2000m/
+gridtiler -i pop_2018_1km.csv -r 1000 -a 5 -o 5000m/
+gridtiler -i pop_2018_1km.csv -r 1000 -a 10 -o 10000m/
+gridtiler -i pop_2018_1km.csv -r 1000 -a 20 -o 20000m/
+gridtiler -i pop_2018_1km.csv -r 1000 -a 50 -o 50000m/
+gridtiler -i pop_2018_1km.csv -r 1000 -a 100 -o 100000m/
+```
+
 ### Filtering and modifying
 
 Use the parameters **filterFunction** and **modFunction** to filter and modify the cells.
