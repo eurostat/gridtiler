@@ -25,12 +25,6 @@ export default function (opts) {
                 console.log("   " + cells.length + " cells kept")
             }
 
-            if (opts.modFunction) {
-                console.log("Modify cells...")
-                const modifyCell = Function("c", opts.modFunction)
-                for (let c of cells) modifyCell(c)
-            }
-
             console.log("Get cell positions...")
             {
                 const getCellPos = Function("c", opts.positionFunction)
@@ -39,6 +33,12 @@ export default function (opts) {
                     c.x = pos.x
                     c.y = pos.y
                 }
+            }
+
+            if (opts.modFunction) {
+                console.log("Modify cells...")
+                const modifyCell = Function("c", opts.modFunction)
+                for (let c of cells) modifyCell(c)
             }
 
 
