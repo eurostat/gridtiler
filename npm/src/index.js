@@ -18,6 +18,7 @@ export default function (opts) {
 
             console.log("   " + cells.length + " cells loaded")
 
+            //filter cells
             if (opts.filterFunction) {
                 console.log("Filter cells...")
                 const filterCell = Function("c", opts.filterFunction)
@@ -25,6 +26,7 @@ export default function (opts) {
                 console.log("   " + cells.length + " cells kept")
             }
 
+            //compute positions
             console.log("Get cell positions...")
             {
                 const getCellPos = Function("c", opts.positionFunction)
@@ -35,6 +37,7 @@ export default function (opts) {
                 }
             }
 
+            //modify cells
             if (opts.modFunction) {
                 console.log("Modify cells...")
                 const modifyCell = Function("c", opts.modFunction)
@@ -45,7 +48,7 @@ export default function (opts) {
             //grid resolution
             let r = +opts.resolutionGeo
 
-            //compute aggregation
+            //compute aggregation, if necessary
             if (opts.aggregationFactor && +opts.aggregationFactor > 1) {
 
                 //target resolution
@@ -155,7 +158,7 @@ export default function (opts) {
                         console.error("Too high value: " + c.y + " >" + (opts.tileSizeCell - 1));
                 }
 
-                //sort cells
+                //sort cells by x and y value
                 t.cells.sort(
                     (c1, c2) => c1.x == c2.x ? c1.y - c2.y : c1.x - c2.x
                 )
