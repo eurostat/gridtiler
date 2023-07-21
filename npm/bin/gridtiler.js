@@ -20,6 +20,8 @@ import cmd from 'commander'
 //import { readFileSync } from 'fs';
 //const pkg = JSON.parse(readFileSync("package.json"));
 
+//console.log(process.env.npm_package_version)
+
 //define command line parameters
 cmd
     .version(process.env.npm_package_version)
