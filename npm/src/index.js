@@ -137,6 +137,7 @@ export default function (opts) {
 
             //the delimiter
             const delim = opts.delim || ","
+            const encs = opts.outencodings || "csv"
 
             for (let t of tiles) {
 
@@ -190,8 +191,12 @@ export default function (opts) {
                 }
 
                 //write data
-                writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
-
+                if (encs == "csv")
+                    writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
+                else if (encs == "parquet") {
+                    console.log("Parquet export not supported yet")
+                } else
+                    console.warn("Unexpected encodings: " + encs)
             }
 
 

@@ -29,6 +29,7 @@ cmd
     .description(process.env.npm_package_description)
     .option("-i, --input <file>", "input CSV file. One row per cell. The file is expected to include two 'x' and 'y' columns for the coordinates of the lower left corner. If not, see positionFunction parameter")
     .option("-o, --output <folder>", "output folder where to produce the tiled grid.", "out/")
+    .option("-e, --outencodings <string>", "output encodings format: 'csv' or 'parquet'", "csv")
     .option("-r, --resolutionGeo <number>", "The grid resolution, that is the size of a grid cell in the CRS unit.")
     .option("-t, --tileSizeCell <number>", "The size of the tile in number of cells.", 128)
     .option("-x, --originPointX <number>", "The X coordinate of the tiling scheme origin point (bottom left).", 0)
