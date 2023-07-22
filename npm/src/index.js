@@ -1,6 +1,7 @@
 
 import { parse } from 'fast-csv';
-import { createReadStream, mkdirSync, writeFileSync, unlinkSync } from 'fs';
+import { createReadStream, mkdirSync, writeFileSync, unlinkSync, renameSync, existsSync } from 'fs';
+import duckdb from 'duckdb'
 
 
 export default function (opts) {
@@ -32,7 +33,7 @@ export default function (opts) {
                 const getCellPos = Function("c", opts.positionFunction)
                 for (let c of cells) {
                     const pos = getCellPos(c)
-                    if(pos.x == undefined || pos.y == undefined) {
+                    if (pos.x == undefined || pos.y == undefined) {
                         console.error("Could not compute position of cell " + c)
                         console.error("Check parameter positionFunction : " + opts.positionFunction)
                         return;
@@ -200,38 +201,34 @@ export default function (opts) {
                 if (encs == "csv")
                     writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
                 else if (encs == "parquet") {
-                    console.log("Parquet export not supported yet")
-
-                    //save as CSV first
-                    writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
-
-                    //TODO
-
                     //https://www.npmjs.com/package/duckdb
                     //https://github.com/duckdb/duckdb
                     //https://duckdb.org/docs/api/nodejs/overview
 
-                    //https://www.npmjs.com/package/node-duckdb
+                    //save as CSV, first
+                    writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
 
+                    //make duckdb connection
                     const db = new duckdb.Database(':memory:');
                     const conn = new duckdb.Connection(db)
 
                     //import CSV
-                    const inCSVPath = folder + t.y + ".csv"
-                    const sql = "CREATE TABLE " + t.y + " AS SELECT * FROM read_csv_auto('" + inCSVPath + "', delim='" + delim + "', header=True)"
-                    const stmt = new duckdb.Statement(conn, sql)
-                    stmt.run()
-
-                    //export as parquet
-                    const stmt2 = new duckdb.Statement(conn, "EXPORT DATABASE '" + folder + "' (FORMAT PARQUET, CODEC '" + codec + "')")
-                    stmt2.run()
-
-                    db.close()
-
-                    //clean
-                    unlinkSync(folder + "schema.sql")
-                    unlinkSync(folder + "load.sql")
-                    //unlinkSync(inCSVPath) //TODO
+                    const id = makeid(12)
+                    const stmt = new duckdb.Statement(conn, "CREATE TABLE " + id + " AS SELECT * FROM read_csv_auto('" + folder + t.y + ".csv" + "', delim='" + delim + "', header=True)")
+                    stmt.run(null, () => {
+                        //clean
+                        unlinkSync(folder + t.y + ".csv")
+                        //export as parquet
+                        const stmt2 = new duckdb.Statement(conn, "EXPORT DATABASE '" + folder + "' (FORMAT PARQUET, CODEC '" + codec + "')")
+                        stmt2.run(null, () => {
+                            //rename parquet file
+                            renameSync(folder + id + ".parquet", folder + t.y + ".parquet")
+                            //clean
+                            if (existsSync(folder + "schema.sql")) unlinkSync(folder + "schema.sql")
+                            if (existsSync(folder + "load.sql")) unlinkSync(folder + "load.sql")
+                            db.close()
+                        })
+                    })
 
                 } else
                     console.warn("Unexpected encodings: " + encs)
@@ -296,3 +293,15 @@ fs.readFile(cmd.output + "info.json", 'utf8', (err, data) => {
 
 */
 
+
+function makeid(length) {
+    let result = '';
+    const characters = 'abcdefghijklmnopqrstuvwxyz';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+    }
+    return result;
+}

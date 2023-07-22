@@ -13,7 +13,6 @@ gridtiler -i ../assets/pop_2018_10km.csv -r 10000 --crs 3035 -t 128 -x 0 -y 0
 
 import gtil from 'gridtiler'
 import cmd from 'commander'
-import duckdb from 'duckdb'
 
 
 //import pkg from "../package.json" assert { type: "json" };
