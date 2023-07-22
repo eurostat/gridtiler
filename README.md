@@ -21,6 +21,7 @@ Run `gridtiler --help` to show the help, or see there:
 | ------------- | ------------- |-------------| ------|
 | -i, --input <file> | X | Input CSV file. One row per cell. The file is expected to include two *x* and *y* columns for the coordinates of the lower left corner. If not, see *positionFunction* parameter. |  |
 | -o, --output <folder> | | output folder where to produce the tiled grid. | "out/" |
+| -e, --outencodings <string> | | output encodings format: 'csv' or 'parquet'. | "csv" |
 | -r, --resolutionGeo <number> | X | The grid resolution, that is the size of a grid cell in the CRS unit. |  |
 | -t, --tileSizeCell <integer> | | The size of the tile in number of cells. | 128 |
 | -x, --originPointX <number> | | The X coordinate of the tiling scheme origin point (bottom left). |0  |
