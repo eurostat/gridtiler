@@ -32,6 +32,11 @@ export default function (opts) {
                 const getCellPos = Function("c", opts.positionFunction)
                 for (let c of cells) {
                     const pos = getCellPos(c)
+                    if(pos.x == undefined || pos.y == undefined) {
+                        console.error("Could not compute position of cell " + c)
+                        console.error("Check parameter positionFunction : " + opts.positionFunction)
+                        return;
+                    }
                     c.x = pos.x
                     c.y = pos.y
                 }
