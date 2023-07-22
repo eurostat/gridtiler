@@ -212,18 +212,18 @@ export default function (opts) {
                     const db = new duckdb.Database(':memory:');
                     const conn = new duckdb.Connection(db)
 
-                    //import CSV
-                    const id = makeid(12)
+                    //import CSV data
+                    const id = makeid(16)
                     const stmt = new duckdb.Statement(conn, "CREATE TABLE " + id + " AS SELECT * FROM read_csv_auto('" + folder + t.y + ".csv" + "', delim='" + delim + "', header=True)")
                     stmt.run(null, () => {
-                        //clean
+                        //delete CSV file
                         unlinkSync(folder + t.y + ".csv")
-                        //export as parquet
+                        //export data as parquet file
                         const stmt2 = new duckdb.Statement(conn, "EXPORT DATABASE '" + folder + "' (FORMAT PARQUET, CODEC '" + codec + "')")
                         stmt2.run(null, () => {
                             //rename parquet file
                             renameSync(folder + id + ".parquet", folder + t.y + ".parquet")
-                            //clean
+                            //remove unecessary files
                             if (existsSync(folder + "schema.sql")) unlinkSync(folder + "schema.sql")
                             if (existsSync(folder + "load.sql")) unlinkSync(folder + "load.sql")
                             db.close()
@@ -278,22 +278,7 @@ export default function (opts) {
 
 
 
-/*
-if (!fs.existsSync(cmd.output + "info.json")) {
-}
-
-fs.readFile(cmd.output + "info.json", 'utf8', (err, data) => {
-    if (err) {
-        console.log(err);
-        return
-    }
-    const info = JSON.parse(data)
-    console.log(info);
-});
-
-*/
-
-
+//generate a random string of length 'length'
 function makeid(length) {
     let result = '';
     const characters = 'abcdefghijklmnopqrstuvwxyz';
