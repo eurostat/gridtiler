@@ -13,6 +13,7 @@ gridtiler -i ../assets/pop_2018_10km.csv -r 10000 --crs 3035 -t 128 -x 0 -y 0
 
 import gtil from 'gridtiler'
 import cmd from 'commander'
+import duckdb from 'duckdb'
 
 
 //import pkg from "../package.json" assert { type: "json" };
@@ -40,7 +41,7 @@ cmd
     .option("-m, --modFunction <string>", "A javascript function body modifying an input cell c before writing a cell data. This may be used for example to remove unecessary columns, or computing new ones from the combination of others.")
     .option("-d, --delim <number>", "The CSV delimiter.", ",")
     .option("-c, --crs <EPSG code>", "EPSG code of the grid Coordinate Reference System", "")
-    //.on('--help', () => { console.log('show help') })
+//.on('--help', () => { console.log('show help') })
 
 //read command line parameters
 cmd.parse(process.argv);
@@ -53,5 +54,3 @@ if (!cmd.resolutionGeo)
 
 //launch tiling
 gtil(cmd)
-
-

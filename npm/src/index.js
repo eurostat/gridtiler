@@ -1,6 +1,6 @@
 
 import { parse } from 'fast-csv';
-import { createReadStream, mkdirSync, writeFileSync } from 'fs';
+import { createReadStream, mkdirSync, writeFileSync, unlinkSync } from 'fs';
 
 
 export default function (opts) {
@@ -138,6 +138,7 @@ export default function (opts) {
             //the delimiter
             const delim = opts.delim || ","
             const encs = opts.outencodings || "csv"
+            const codec = "GZIP" //TODO expose this parameter ?
 
             for (let t of tiles) {
 
@@ -195,6 +196,38 @@ export default function (opts) {
                     writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
                 else if (encs == "parquet") {
                     console.log("Parquet export not supported yet")
+
+                    //save as CSV first
+                    writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
+
+                    //TODO
+
+                    //https://www.npmjs.com/package/duckdb
+                    //https://github.com/duckdb/duckdb
+                    //https://duckdb.org/docs/api/nodejs/overview
+
+                    //https://www.npmjs.com/package/node-duckdb
+
+                    const db = new duckdb.Database(':memory:');
+                    const conn = new duckdb.Connection(db)
+
+                    //import CSV
+                    const inCSVPath = folder + t.y + ".csv"
+                    const sql = "CREATE TABLE " + t.y + " AS SELECT * FROM read_csv_auto('" + inCSVPath + "', delim='" + delim + "', header=True)"
+                    const stmt = new duckdb.Statement(conn, sql)
+                    stmt.run()
+
+                    //export as parquet
+                    const stmt2 = new duckdb.Statement(conn, "EXPORT DATABASE '" + folder + "' (FORMAT PARQUET, CODEC '" + codec + "')")
+                    stmt2.run()
+
+                    db.close()
+
+                    //clean
+                    unlinkSync(folder + "schema.sql")
+                    unlinkSync(folder + "load.sql")
+                    //unlinkSync(inCSVPath) //TODO
+
                 } else
                     console.warn("Unexpected encodings: " + encs)
             }
