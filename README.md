@@ -29,7 +29,8 @@ Run `gridtiler --help` to show the help, or see there:
 | -a, --aggregationFactor <integer> | | In case there is the need for aggregating the cells to lower resolution, specify this parameter. The resolution of the aggregated grid will be this parameter time the input resolution *resolutionGeo*. | undefined |
 | -p, --positionFunction <string> | | A javascript function body returning the position of an input cell c as a {x,y} object. | "return { x: c.x, y: c.y };" |
 | -f, --filterFunction <string> | | A javascript function body specifying if an input cell should be filtered or kept. Return true to keep, false to filter out. | undefined |
-| -, --preFunction <string> | | A javascript function body pre-processing a cell c. This function is applied before the cells are aggregated. This may be used for example to remove unecessary columns, or computing new ones from the combination of others. This function applies after filtering. | undefined |
+| -m, --preFunction <string> | | A javascript function body modifying an input cell c at the beginning of the process, before the aggregation and tiling. This may be used for example to remove unecessary columns, or computing new ones from the combination of others. This function applies after filtering. | undefined |
+| -n, --postFunction <string> | | A javascript function body modifying an input cell c after the aggregation and before the tiling. This may be used to alter cell data after the aggregation. | undefined |
 | -d, --delim <string> | | The CSV delimiter. | "," |
 | -c, --crs <EPSG code> | | EPSG code of the grid Coordinate Reference System. | "" |
 | -V, --version | | Show version number. |  |
