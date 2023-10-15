@@ -107,7 +107,7 @@ export default function (opts) {
             }
 
             //post-processing cells
-            if (opts.preFunction) {
+            if (opts.postFunction) {
                 console.log("Post-processing cells...")
                 const postFunction = Function("c", opts.postFunction)
                 for (let c of cells) postFunction(c)
