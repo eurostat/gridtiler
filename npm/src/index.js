@@ -43,13 +43,12 @@ export default function (opts) {
                 }
             }
 
-            //modify cells
-            if (opts.modFunction) {
-                console.log("Modify cells...")
-                const modifyCell = Function("c", opts.modFunction)
-                for (let c of cells) modifyCell(c)
+            //pre-processing cells
+            if (opts.preFunction) {
+                console.log("Pre-processing cells...")
+                const preFunction = Function("c", opts.preFunction)
+                for (let c of cells) preFunction(c)
             }
-
 
             //grid resolution
             let r = +opts.resolutionGeo
@@ -107,6 +106,13 @@ export default function (opts) {
                 console.log("   " + cells.length + " aggregated cells.")
             }
 
+            //post-processing cells
+            if (opts.preFunction) {
+                console.log("Post-processing cells...")
+                const postFunction = Function("c", opts.postFunction)
+                for (let c of cells) postFunction(c)
+            }
+
             console.log("Index cells by tile")
 
             // compute tile size, in geo unit
@@ -144,7 +150,7 @@ export default function (opts) {
             //the delimiter
             const delim = opts.delim || ","
             const encs = opts.outencodings || "csv"
-            const codec = "GZIP" //TODO expose this parameter ?
+            const codec = "GZIP" //TODO expose this as a parameter ?
 
             for (let t of tiles) {
 
