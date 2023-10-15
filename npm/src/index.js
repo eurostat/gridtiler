@@ -218,7 +218,13 @@ export default function (opts) {
                     delete c.x
                     delete c.y
                     //stats after
-                    for (let k of keys) d_.push(c[k])
+                    for (let k of keys) {
+                        //get stat value
+                        const v = c[k]
+                        //store as a integer if it is an integer
+                        const vI = Math.floor(v)
+                        d_.push(v == vI ? vI : v)
+                    }
                     data.push(d_.join(delim))
                 }
 
