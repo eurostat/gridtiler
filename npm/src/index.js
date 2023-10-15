@@ -50,6 +50,19 @@ export default function (opts) {
                 for (let c of cells) preFunction(c)
             }
 
+            //keep only specified columns
+            if (opts.columns) {
+                const cols = opts.columns.split(",")
+                console.log("Keep columns x,y and: " + (cols.join(", ")))
+                const keys = Object.keys(cells[0])
+                for (let k of keys) {
+                    if (k === "x" || k === "y") continue;
+                    if (cols.includes(k)) continue;
+                    //remove column
+                    for (let c of cells) delete c[k]
+                }
+            }
+
             //grid resolution
             let r = +opts.resolutionGeo
 
