@@ -96,8 +96,8 @@ export default function (opts) {
                 const aggregateSum = (vs) => { let sum = 0; for (let v of vs) { sum += +v; } return sum }
 
                 //prepare function to round aggregated figures
-                const tolerance = 1 / 10 ** opts.aggregationRounding
-                const roundToTolerance = (number) => Math.round(number / tolerance) * tolerance;
+                const tolerance = Math.pow(10, opts.aggregationRounding)
+                const roundToTolerance = (number) => Math.round(number * tolerance) / tolerance;
 
                 //aggregate cell values
                 const keys = Object.keys(cells[0])
