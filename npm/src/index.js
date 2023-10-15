@@ -107,6 +107,7 @@ export default function (opts) {
                             for (let c of cA.cells) vs.push(c[k])
                             //compute and set aggregated value
                             cA[k] = aggregateSum(vs)
+                            //TODO
                         }
                         cA.cells = []; delete cA.cells
                         cells.push(cA)
@@ -309,3 +310,16 @@ function makeid(length) {
     }
     return result;
 }
+
+/** */
+const nbDec = 6
+const tolerance = 1/10**nbDec
+const roundToTolerance = (number) => Math.round(number / tolerance) * tolerance;
+
+
+console.log(roundToTolerance(131739836.30000001))
+console.log(roundToTolerance(27898639.8999999))
+console.log(roundToTolerance(100))
+console.log(roundToTolerance(0))
+console.log(roundToTolerance(23.123e45))
+console.log(roundToTolerance(17.4596e-23))
