@@ -21,7 +21,7 @@ Run `gridtiler --help` to show the help, or see there:
 | ------------- | ------------- |-------------| ------|
 | -i, --input <file> | X | Input CSV file. One row per cell. The file is expected to include two *x* and *y* columns for the coordinates of the lower left corner. If not, see *positionFunction* parameter. |  |
 | -o, --output <folder> | | output folder where to produce the tiled grid. | "out/" |
-| -v, --columns <list> | | The columns to keep, as comma separated list. If not specified, all columns are kept. | undefined |
+| -s, --columns <list> | | The columns to keep, as comma separated list. If not specified, all columns are kept. | undefined |
 | -e, --outencodings <string> | | output encodings format: 'csv' or 'parquet'. | "csv" |
 | -r, --resolutionGeo <number> | X | The grid resolution, that is the size of a grid cell in the CRS unit. |  |
 | -t, --tileSizeCell <integer> | | The size of the tile in number of cells. | 128 |
