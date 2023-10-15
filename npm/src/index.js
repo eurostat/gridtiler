@@ -95,6 +95,10 @@ export default function (opts) {
                 //TODO handle other cases: average, mode, etc
                 const aggregateSum = (vs) => { let sum = 0; for (let v of vs) { sum += +v; } return sum }
 
+                //prepare function to round aggregated figures
+                const tolerance = 1 / 10 ** opts.aggregationRounding
+                const roundToTolerance = (number) => Math.round(number / tolerance) * tolerance;
+
                 //aggregate cell values
                 const keys = Object.keys(cells[0])
                 cells = []
@@ -107,7 +111,8 @@ export default function (opts) {
                             for (let c of cA.cells) vs.push(c[k])
                             //compute and set aggregated value
                             cA[k] = aggregateSum(vs)
-                            //TODO
+                            if (opts.aggregationRounding != undefined)
+                                cA[k] = roundToTolerance(cA[k])
                         }
                         cA.cells = []; delete cA.cells
                         cells.push(cA)
@@ -310,16 +315,3 @@ function makeid(length) {
     }
     return result;
 }
-
-/** */
-const nbDec = 6
-const tolerance = 1/10**nbDec
-const roundToTolerance = (number) => Math.round(number / tolerance) * tolerance;
-
-
-console.log(roundToTolerance(131739836.30000001))
-console.log(roundToTolerance(27898639.8999999))
-console.log(roundToTolerance(100))
-console.log(roundToTolerance(0))
-console.log(roundToTolerance(23.123e45))
-console.log(roundToTolerance(17.4596e-23))
