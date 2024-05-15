@@ -165,7 +165,7 @@ export default function (opts) {
             console.log("   " + tiles.length + " tiles created.")
 
             //TODO release memory ?
-            //delete cells
+            //cells = []
 
             console.log("Save tiles...")
 
