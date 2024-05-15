@@ -164,6 +164,9 @@ export default function (opts) {
             const tiles = Object.values(tiles_);
             console.log("   " + tiles.length + " tiles created.")
 
+            //TODO release memory ?
+            //delete cells
+
             console.log("Save tiles...")
 
             //the delimiter
@@ -263,6 +266,9 @@ export default function (opts) {
 
                 } else
                     console.warn("Unexpected encodings: " + encs)
+
+                //TODO release memory ?
+                //delete t.cells
             }
 
 
