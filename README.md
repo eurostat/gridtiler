@@ -74,9 +74,9 @@ Examples:
 
 #### Dealing with INSPIRE identifier
 
-If the cell is described with an INSPIRE identifier (such as *CRS3035RES5000mN4585000E5265000*) in a **GRD_ID** column, use the following parameter to extract the cell position: `--positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"`. This **GRD_ID** column may then be removed in the output tiles with `--postFunction "delete c.GRD_ID"`
+If the cell is described with an INSPIRE identifier (such as *CRS3035RES5000mN4585000E5265000*) in a **GRD_ID** column, use the following parameter to extract the cell position: `--positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"`. This **GRD_ID** column may then be removed in the output tiles with `--preFunction "delete c.GRD_ID"`
 
-Example: With European population grids downloaded from [Eurostat grids page](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use `gridtiler -i pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --postFunction "delete c.GRD_ID"`
+Example: With European population grids downloaded from [Eurostat grids page](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/grids), use `gridtiler -i pop_5000m.csv -r 5000 --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};" --preFunction "delete c.GRD_ID"`
 
 ### Aggregation
 
