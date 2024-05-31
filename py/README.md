@@ -1,19 +1,21 @@
 # GridTiler in Python
 
-Install the [pygridmap](https://github.com/eurostat/pygridmap) library with:
+Install latest version of [pygridmap](https://github.com/eurostat/pygridmap) library with:
 
 ```python
 pip install git+https://github.com/eurostat/pygridmap.git
 ```
 
+and import `gridtiler` in your code with:
+
 ```python
 from pygridmap import gridtiler
 ```
 
-'gridtiler' gives the three functions:
-- 'gridtiler.grid_tiling' to tile a CSV grid.
-- 'gridtiler.grid_transformation' to change the format of a CSV grid.
-- 'gridtiler.grid_aggregation' to aggregate a CSV grid into a lower resolution CSV grid.
+`gridtiler` gives the three functions:
+- `gridtiler.grid_tiling` to tile a CSV grid.
+- `gridtiler.grid_transformation` to change the format of a CSV grid.
+- `gridtiler.grid_aggregation` to aggregate a CSV grid into a lower resolution CSV grid.
 
 ## Example
 
