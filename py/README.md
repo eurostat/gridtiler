@@ -40,11 +40,29 @@ print("Transformation")
 gridtiler.grid_transformation("assets/pop_5000m.csv", cell_transformation, "tmp/pop_5000.csv")
 ```
 
+The output file `tmp/pop_5000.csv` is ready to be tiled, but aggregated version at 10000, 20000 and 50000m resolution can be produced first with:
 
+```python
+print("Aggregation to 10 000m")
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_10000.csv", 2, 0)
+print("Aggregation to 20 000m")
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_20000.csv", 4, 0)
+print("Aggregation to 50 000m")
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_50000.csv", 10, 0)
+```
 
+Each resolution file can be tiled with:
 
-TODO: with pop_5000m.csv file.
-
+```python
+print("Tiling 5000m")
+gridtiler.grid_tiling("tmp/pop_5000.csv", "tmp/5000", 5000)
+print("Tiling 10 000m")
+gridtiler.grid_tiling("tmp/pop_10000.csv", "tmp/10000", 10000)
+print("Tiling 20 000m")
+gridtiler.grid_tiling("tmp/pop_20000.csv", "tmp/20000", 20000)
+print("Tiling 50 000m")
+gridtiler.grid_tiling("tmp/pop_50000.csv", "tmp/50000", 50000)
+```
 
 ## See also
 
