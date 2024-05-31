@@ -2,7 +2,7 @@ from pygridmap import gridtiler
 
 
 #cell transformation function
-def cell_transformation(c):
+def cell_transformation_fun(c):
 
     #extract x and y from grid cell code
     a = c['GRD_ID'].split("N")[1].split("E")
@@ -14,7 +14,7 @@ def cell_transformation(c):
     del c['CNTR_ID']
 
 print("Transformation")
-gridtiler.grid_transformation("assets/pop_5000m.csv", cell_transformation, "tmp/pop_5000.csv")
+gridtiler.grid_transformation("assets/pop_5000m.csv", cell_transformation_fun, "tmp/pop_5000.csv")
 
 
 
