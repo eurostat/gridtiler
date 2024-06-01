@@ -181,6 +181,10 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     #input raster file
     raster = rasterio.open(in_raster_file)
 
+    #
+    width = raster.width
+    height = raster.height
+
     #get resolution
     transform = raster.transform
     pixel_width = transform[0]
@@ -206,11 +210,11 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
 
     values_calculator = {}
     for i, label in enumerate(band_labels):
-        band = raster.read(i+1)
+        data = raster.read(i+1)
         def fun(xG,yG):
-            i = floor((xG-x_min)/(x_max-x_min))
-            j = floor((yG-y_min)/(y_max-y_min))
-            pixel_value = band[i, j]
+            i = floor(width*(xG-x_min)/(x_max-x_min))
+            j = floor(height*(yG-y_min)/(y_max-y_min))
+            pixel_value = data[i, j]
             if pixel_value == no_data: return None
             #if pixel_value != 65535: print(pixel_value)
             return pixel_value
