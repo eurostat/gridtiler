@@ -8,27 +8,7 @@ import pandas as pd
 
 
 
-def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell=128, crs="", format="csv", compression="snappy"):
-    """_summary_
-
-    Args:
-        values_calculator (_type_): _description_
-        resolution (_type_): _description_
-        output_folder (_type_): _description_
-        x_origin (_type_): _description_
-        y_origin (_type_): _description_
-        x_min (_type_): _description_
-        y_min (_type_): _description_
-        x_max (_type_): _description_
-        y_max (_type_): _description_
-        tile_size_cell (int, optional): _description_. Defaults to 128.
-        crs (str, optional): _description_. Defaults to "".
-        format (str, optional): _description_. Defaults to "csv".
-        compression (str, optional): _description_. Defaults to "snappy".
-
-    Returns:
-        _type_: _description_
-    """
+def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell=128, crs="", format="csv", compression="snappy"):
 
     #tile frame caracteristics
     tileSizeGeo = resolution * tile_size_cell
@@ -230,8 +210,10 @@ def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_o
         values_calculator[label] = fun
 
     #tiling
-    tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, str(raster.crs), format, compression)
+    _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, str(raster.crs), format, compression)
 
 
 print("start")
-tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
+#tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
+tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/")
+
