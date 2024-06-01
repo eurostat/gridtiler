@@ -173,19 +173,17 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
 
 
 
-def tiling_raster(in_file, output_folder, tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128, format="csv", compression="snappy"):
 
-    raster = rasterio.open(in_file)
-    data = raster.read()
-    metadata = raster.meta
-    num_bands = raster.count
+    #input raster file
+    raster = rasterio.open(in_raster_file)
 
     #get resolution
     transform = raster.transform
     pixel_width = transform[0]
     pixel_height = -transform[4]
     if pixel_width != pixel_height:
-        print("Different resolutions in x and y for", in_file, pixel_width, pixel_height)
+        print("Different resolutions in x and y for", in_raster_file, pixel_width, pixel_height)
         return
     resolution = pixel_width
 
@@ -196,13 +194,23 @@ def tiling_raster(in_file, output_folder, tile_size_cell=128, format="csv", comp
     x_max = geo_bounds[2]
     y_max  = geo_bounds[3]
 
+    #TODO use that for value to ignore
+    #metadata = raster.meta
+    #no_data = metadata["nodata"]
+
+    if raster.count != len(band_labels):
+        print("different number of bands and labels", raster.count, band_labels)
+
+    values_calculator = {}
+    for label in band_labels:
+        def fun(xG,yG):
+            pixel_value = raster.read(1)[45, 90]
+            return 0
+        values_calculator[label] = fun
+
     #tiling
-    tiling_({}, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, crs, format, compression)
-
-    no_data = metadata["nodata"]
-    pixel_value = raster.read(1)[45, 90]
+    tiling_(values_calculator, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, raster.crs, format, compression)
 
 
 
-
-tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', "tmp/tiff/")
+tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "tmp/tiff/")
