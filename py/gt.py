@@ -205,11 +205,13 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
         print("different number of bands and labels", raster.count, band_labels)
 
     values_calculator = {}
-    for label in band_labels:
+    for i, label in enumerate(band_labels):
+        band = raster.read(i+1)
         def fun(xG,yG):
-            #pixel_value = raster.read(1)[45, 90]
-            #TODO
-            return 222
+            i = floor((xG-x_min)/(x_max-x_min))
+            j = floor((yG-y_min)/(y_max-y_min))
+            pixel_value = band[i, j]
+            return pixel_value
         values_calculator[label] = fun
 
     #tiling
