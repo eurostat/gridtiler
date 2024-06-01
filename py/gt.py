@@ -131,9 +131,10 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
             #save as CSV file
             cfp = fo + str(yt) + ".csv"
             with open(cfp, 'w', newline='') as csv_file:
-                writer = csv.writer(csv_file)
+                #get writer
+                writer = csv.DictWriter(csv_file, fieldnames=headers)
                 #write the header
-                writer.writerow(headers)
+                writer.writeheader()
 
                 #write the cell rows
                 for c in cells:
@@ -142,6 +143,7 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
             if format == "csv": continue
 
             #csv to parquet
+
             #load csv file            
             df = pd.read_csv(cfp)
             #save as parquet            
