@@ -100,3 +100,22 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
                     cells.append(cell)
 
 
+            #if no cell within tile, skip
+            if len(cells) == 0: continue
+
+            #TODO store max/min x/y tile
+
+
+            #remove column with all values null
+            #check columns
+            for key in keys:
+                #check if cells all have key as column
+                toRemove = True
+                for c in cells:
+                    if c[key]==None: continue
+                    toRemove = False
+                    break
+                #remove column
+                if toRemove:
+                    for c in cells: del c[key]
+            
