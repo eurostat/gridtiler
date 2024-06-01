@@ -211,7 +211,7 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
         values_calculator[label] = fun
 
     #tiling
-    tiling_(values_calculator, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, raster.crs, format, compression)
+    tiling_(values_calculator, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, str(raster.crs), format, compression)
 
 
 print("start")
