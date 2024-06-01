@@ -1,5 +1,7 @@
 import rasterio
 from math import ceil,floor
+import csv
+import os
 
 #https://github.com/eurostat/JGiscoTools/blob/dev/modules/gproc/src/main/java/eu/europa/ec/eurostat/jgiscotools/gridProc/GridTiler2.java
 
@@ -118,4 +120,24 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
                 #remove column
                 if toRemove:
                     for c in cells: del c[key]
-            
+
+            #make csv header, ensuring x and y are first columns
+            headers = cells[0].keys()
+            headers.remove("x")
+            headers.remove("y")
+            headers.insert(0, "x")
+            headers.insert(1, "y")
+
+            #create output folder if it does not already exists
+            fo = folder_out + "/" + tx + "/"
+            if not os.path.exists(fo): os.makedirs(fo)
+
+            #save as CSV file
+            with open(fo + ty + ".csv", 'w', newline='') as csv_file:
+                writer = csv.writer(csv_file)
+                #write the header
+                writer.writerow(headers)
+
+                #write the cell rows
+                for c in cells:
+                    writer.writerow(c)
