@@ -177,7 +177,7 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
 
 
 
-def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, tile_size_cell=128, format="csv", compression="snappy"):
 
     #input raster file
     raster = rasterio.open(in_raster_file)
@@ -195,12 +195,16 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
         return
     resolution = pixel_width
 
-    #get origin
+    #set extent, if not specified
     geo_bounds = raster.bounds
-    x_min = geo_bounds[0]
-    y_min  = geo_bounds[1]
-    x_max = geo_bounds[2]
-    y_max  = geo_bounds[3]
+    if x_min==None: x_min = geo_bounds[0]
+    if y_min==None: y_min  = geo_bounds[1]
+    if x_max==None: x_max = geo_bounds[2]
+    if y_max==None: y_max  = geo_bounds[3]
+
+    #set origin, if not specified
+    if x_origin==None: x_origin=x_min
+    if y_origin==None: y_origin=y_min
 
     #value to ignore
     metadata = raster.meta
@@ -214,6 +218,7 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     values_calculator = {}
     r2 = resolution/2
     for i, label in enumerate(band_labels):
+        if label == None: continue
         data = raster.read(i+1)
         def fun(x_cell,y_cell):
             row, col = rowcol(transform, x_cell+r2, y_cell+r2)
@@ -225,7 +230,7 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
         values_calculator[label] = fun
 
     #tiling
-    tiling_(values_calculator, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, str(raster.crs), format, compression)
+    tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, str(raster.crs), format, compression)
 
 
 print("start")
