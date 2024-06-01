@@ -212,19 +212,19 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     print(width, height)
 
     values_calculator = {}
-    #r2 = resolution/2
+    r2 = resolution/2
     for i, label in enumerate(band_labels):
         data = raster.read(i+1)
         def fun(xG,yG):
-            row, col = rowcol(transform, xG, yG)
+            row, col = rowcol(transform, xG+r2, yG+r2)
             #col = floor(width*(xG-x_min)/(x_max-x_min))
             #row = floor(height*(yG-y_min)/(y_max-y_min))
             #print(i,j)
             #pixel_value = data[row, col]
             #if i>=width: return None
             #if j>=height: return None
-            print(row, col)
-            print(height, width)
+            #print(row, col)
+            #print(height, width)
             pixel_value = data[row,col]
             if pixel_value == no_data: return None
             return pixel_value
