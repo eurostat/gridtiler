@@ -59,3 +59,9 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
             #prepare tile cells
             cells = []
 
+            for xtc in range(0, tile_size_nb):
+                for ytc in range(0, tile_size_nb):
+
+                    #make new cell
+                    cell = {}
+
