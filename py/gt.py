@@ -1,4 +1,5 @@
 import rasterio
+from rasterio.transform import rowcol
 from math import ceil,floor
 import os
 import csv
@@ -208,15 +209,24 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     if raster.count != len(band_labels):
         print("different number of bands and labels", raster.count, band_labels)
 
+    print(width, height)
+
     values_calculator = {}
+    #r2 = resolution/2
     for i, label in enumerate(band_labels):
         data = raster.read(i+1)
         def fun(xG,yG):
-            i = floor(width*(xG-x_min)/(x_max-x_min))
-            j = floor(height*(yG-y_min)/(y_max-y_min))
-            pixel_value = data[i, j]
+            row, col = rowcol(transform, xG, yG)
+            #col = floor(width*(xG-x_min)/(x_max-x_min))
+            #row = floor(height*(yG-y_min)/(y_max-y_min))
+            #print(i,j)
+            #pixel_value = data[row, col]
+            #if i>=width: return None
+            #if j>=height: return None
+            print(row, col)
+            print(height, width)
+            pixel_value = data[row,col]
             if pixel_value == no_data: return None
-            #if pixel_value != 65535: print(pixel_value)
             return pixel_value
         values_calculator[label] = fun
 
