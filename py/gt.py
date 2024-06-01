@@ -5,45 +5,29 @@ import csv
 import json
 import pandas as pd
 
-#https://github.com/eurostat/JGiscoTools/blob/dev/modules/gproc/src/main/java/eu/europa/ec/eurostat/jgiscotools/gridProc/GridTiler2.java
-
-file_path = 'assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif'
-with rasterio.open(file_path) as src:
-    data = src.read()
-    metadata = src.meta
-
-    geo_bounds = src.bounds
-    num_bands = src.count
-
-    transform = src.transform
-    pixel_width = transform[0]
-    pixel_height = -transform[4]
-
-    no_data = metadata["nodata"]
-
-    pixel_value = src.read(1)[45, 90]
 
 
-print("Metadata:", metadata)
-print("Data shape:", data.shape)
-print("Data shape:", geo_bounds)
+def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell=128, crs="", format="csv", compression="snappy"):
+    """_summary_
 
-print("res x", pixel_width)
-print("res y", pixel_height)
+    Args:
+        values_calculator (_type_): _description_
+        resolution (_type_): _description_
+        output_folder (_type_): _description_
+        x_origin (_type_): _description_
+        y_origin (_type_): _description_
+        x_min (_type_): _description_
+        y_min (_type_): _description_
+        x_max (_type_): _description_
+        y_max (_type_): _description_
+        tile_size_cell (int, optional): _description_. Defaults to 128.
+        crs (str, optional): _description_. Defaults to "".
+        format (str, optional): _description_. Defaults to "csv".
+        compression (str, optional): _description_. Defaults to "snappy".
 
-
-print("no data", no_data)
-print("num_bands", num_bands)
-
-print(pixel_value)
-
-
-
-
-#	public static void tile(String description, Map<String, ColummCalculator> values, Coordinate originPoint, Envelope envG, int resolutionG, int tileSizeNbCells, String crs, Format format, CompressionCodecName comp, String folderPath) {
-
-def tiling(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell=128, crs="", format="csv", compression="snappy"):
-
+    Returns:
+        _type_: _description_
+    """
 
     #tile frame caracteristics
     tileSizeGeo = resolution * tile_size_cell
@@ -186,3 +170,39 @@ def tiling(values_calculator, resolution, output_folder, x_origin, y_origin, x_m
     with open(output_folder + '/info.json', 'w') as json_file:
         json.dump(data, json_file, indent=3)
 
+
+
+
+def tiling_raster(in_file, output_folder, tile_size_cell=128, format="csv", compression="snappy"):
+
+    raster = rasterio.open(in_file)
+    data = raster.read()
+    metadata = raster.meta
+    num_bands = raster.count
+
+    #get resolution
+    transform = raster.transform
+    pixel_width = transform[0]
+    pixel_height = -transform[4]
+    if pixel_width != pixel_height:
+        print("Different resolutions in x and y for", in_file, pixel_width, pixel_height)
+        return
+    resolution = pixel_width
+
+    #get origin
+    geo_bounds = raster.bounds
+    x_min = geo_bounds[0]
+    y_min  = geo_bounds[1]
+    x_max = geo_bounds[2]
+    y_max  = geo_bounds[3]
+
+    #tiling
+    tiling_({}, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, crs, format, compression)
+
+    no_data = metadata["nodata"]
+    pixel_value = raster.read(1)[45, 90]
+
+
+
+
+tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', "tmp/tiff/")
