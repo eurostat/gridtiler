@@ -51,6 +51,12 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
     #get keys
     keys = values_calculator.keys()
 
+    #function to make cell template
+    def make_cell():
+        c = {}
+        for k in keys: c[k] = None
+        return c
+
 	#TODO parallel ?
     for tx in range(tileMinX, tileMaxX):
         for ty in range(tileMinY, tileMaxY):
@@ -63,5 +69,24 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
                 for ytc in range(0, tile_size_nb):
 
                     #make new cell
-                    cell = {}
+                    cell = None
 
+                    #get values
+                    for k in keys:
+                        #compute geo coordinate
+                        xG = x_or + tx * tileSizeGeo + xtc*resolution
+                        yG = y_or + ty * tileSizeGeo + ytc*resolution
+
+                        if xG<x_min: continue
+                        if xG>x_max: continue
+                        if yG<y_min: continue
+                        if yG>y_max: continue
+
+                        #get value
+                        v = values_calculator[k](xG, yG)
+
+                        #
+                        if v==None: continue
+                        if cell == None: cell = make_cell(keys)
+                        cell[k] = v
+                    
