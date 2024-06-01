@@ -202,7 +202,7 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     x_max = geo_bounds[2]
     y_max  = geo_bounds[3]
 
-    #TODO use that for value to ignore
+    #value to ignore
     metadata = raster.meta
     no_data = metadata["nodata"]
 
