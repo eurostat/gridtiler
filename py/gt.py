@@ -54,13 +54,14 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
 	#TODO parallel ?
     for xt in range(tileMinX, tileMaxX):
         for yt in range(tileMinY, tileMaxY):
-            #handle tile (tx,ty)
+            print("tile", xt, yt)
 
             #prepare tile cells
             cells = []
 
             for xtc in range(0, tile_size_cell):
                 for ytc in range(0, tile_size_cell):
+                    #print("cell", xtc, ytc)
 
                     #make new cell
                     cell = None
@@ -81,7 +82,7 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
 
                         #
                         if v==None: continue
-                        if cell == None: cell = make_cell(keys)
+                        if cell == None: cell = make_cell()
                         cell[k] = v
                     
                     #no value found: skip
@@ -117,18 +118,18 @@ def tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_
                     for c in cells: del c[key]
 
             #make csv header, ensuring x and y are first columns
-            headers = cells[0].keys()
+            headers = list(cells[0].keys())
             headers.remove("x")
             headers.remove("y")
             headers.insert(0, "x")
             headers.insert(1, "y")
 
             #create output folder if it does not already exists
-            fo = output_folder + "/" + xt + "/"
+            fo = output_folder + "/" + str(xt) + "/"
             if not os.path.exists(fo): os.makedirs(fo)
 
             #save as CSV file
-            cfp = fo + yt + ".csv"
+            cfp = fo + str(yt) + ".csv"
             with open(cfp, 'w', newline='') as csv_file:
                 writer = csv.writer(csv_file)
                 #write the header
@@ -204,13 +205,14 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     values_calculator = {}
     for label in band_labels:
         def fun(xG,yG):
-            pixel_value = raster.read(1)[45, 90]
-            return 0
+            #pixel_value = raster.read(1)[45, 90]
+            #TODO
+            return 222
         values_calculator[label] = fun
 
     #tiling
     tiling_(values_calculator, resolution, output_folder, x_min, y_min, x_min, y_min, x_max, y_max, tile_size_cell, raster.crs, format, compression)
 
 
-
+print("start")
 tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "tmp/tiff/")
