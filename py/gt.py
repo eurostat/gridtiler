@@ -229,4 +229,4 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
 
 
 print("start")
-tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "tmp/tiff/")
+tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
