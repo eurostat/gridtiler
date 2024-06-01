@@ -198,8 +198,8 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
     y_max  = geo_bounds[3]
 
     #TODO use that for value to ignore
-    #metadata = raster.meta
-    #no_data = metadata["nodata"]
+    metadata = raster.meta
+    no_data = metadata["nodata"]
 
     if raster.count != len(band_labels):
         print("different number of bands and labels", raster.count, band_labels)
@@ -211,6 +211,8 @@ def tiling_raster(in_raster_file, band_labels, output_folder, tile_size_cell=128
             i = floor((xG-x_min)/(x_max-x_min))
             j = floor((yG-y_min)/(y_max-y_min))
             pixel_value = band[i, j]
+            if pixel_value == no_data: return None
+            #if pixel_value != 65535: print(pixel_value)
             return pixel_value
         values_calculator[label] = fun
 
