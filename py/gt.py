@@ -90,3 +90,13 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
                         if cell == None: cell = make_cell(keys)
                         cell[k] = v
                     
+                    #no value found: skip
+                    if cell == None: continue
+
+                    #set cell x,y within its tile
+                    cell["x"] = xtc
+                    cell["y"] = ytc
+
+                    cells.append(cell)
+
+
