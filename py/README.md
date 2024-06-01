@@ -24,7 +24,7 @@ Let's see an example on [european population grid at 5000m resolution](/assets/p
 The first step is to transform the input data to extract the `x` and `y` from the `GRD_ID` and then remove the `GRD_ID` and `CNTR_ID` colmuns. It can be achieved with:
 
 ```python
-#cell transformation function
+#define cell transformation function
 def cell_transformation_fun(c):
 
     #extract x and y from grid cell code

@@ -1,7 +1,11 @@
 from pygridmap import gridtiler
+import os
+
+#create output folder if it does not already exists
+if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
 
-#cell transformation function
+#define cell transformation function
 def cell_transformation_fun(c):
 
     #extract x and y from grid cell code
