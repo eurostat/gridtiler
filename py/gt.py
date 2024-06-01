@@ -1,6 +1,6 @@
 import rasterio
 
-file_path = '/home/juju/Bureau/sample.tif'
+file_path = 'assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif'
 with rasterio.open(file_path) as src:
     data = src.read()
     metadata = src.meta
@@ -14,7 +14,7 @@ with rasterio.open(file_path) as src:
 
     no_data = metadata["nodata"]
 
-    pixel_value = src.read(1)[450, 990]
+    pixel_value = src.read(1)[45, 90]
 
 
 print("Metadata:", metadata)
