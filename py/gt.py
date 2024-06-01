@@ -51,4 +51,11 @@ def tiling(values_calculator, resolution, folder_out, x_or, y_or, x_min, y_min, 
     #get keys
     keys = values_calculator.keys()
 
+	#TODO parallel ?
+    for tx in range(tileMinX, tileMaxX):
+        for ty in range(tileMinY, tileMaxY):
+            #handle tile (tx,ty)
+
+            #prepare tile cells
+            cells = []
 
