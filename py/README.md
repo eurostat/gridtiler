@@ -10,9 +10,9 @@ pip install git+https://github.com/eurostat/pygridmap.git
 
 To tile gridded data from a raster file such as GeoTiff, import `gridtiler_raster` in your code with `from pygridmap import gridtiler_raster`. `gridtiler_raster` gives access to a function `tiling_raster`.
 
-See an example [here](example_2.py).
+See an example [here](example_2.py). See also [this repository](https://github.com/jgaffuri/tiled-europe-forest/tree/main).
 
-See also [this repository](https://github.com/jgaffuri/tiled-europe-forest/tree/main).
+NB: For aggregating raster data, use [gdalwarp](https://gdal.org/programs/gdalwarp.html) program.
 
 ## Tiling gridded CSV data
 
