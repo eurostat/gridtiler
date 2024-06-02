@@ -166,16 +166,15 @@ def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max
     if x_origin==None: x_origin=x_min
     if y_origin==None: y_origin=y_min
 
-    def get_values_calculator(e):
+    def get_values_calculator(file, band, no_data_values=[]):
         #open file
-        raster = rasterio.open(e["file"])
+        raster = rasterio.open(file)
         transform = raster.transform
 
         #value to ignore
         nodata = raster.meta["nodata"]
-        no_data_values = e["no_data_values"]
 
-        data = raster.read(e["band"])
+        data = raster.read(band)
 
         def fun(x_cell,y_cell):
             row, col = rowcol(transform, x_cell+r2, y_cell+r2)
@@ -190,8 +189,9 @@ def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max
     values_calculator = {}
     r2 = resolution/2
     for label in rasters:
-        e = rasters[label]
-        values_calculator[label] = get_values_calculator(e)
+        entry = rasters[label]
+        no_data_values = entry["no_data_values"] if "no_data_values" in entry else []
+        values_calculator[label] = get_values_calculator(entry["file"], entry["band"], no_data_values)
 
     #tiling
     _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, crs, format, compression)
@@ -212,5 +212,4 @@ tiling_raster(
 900000,
 900000,
 7400000,
-5500000
- )
+5500000)
