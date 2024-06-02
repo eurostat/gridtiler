@@ -162,35 +162,11 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", compression="snappy"):
 
-
-    '''
-    #set extent, if not specified
-    geo_bounds = raster.bounds
-    if x_min==None: x_min = geo_bounds[0]
-    if y_min==None: y_min  = geo_bounds[1]
-    if x_max==None: x_max = geo_bounds[2]
-    if y_max==None: y_max  = geo_bounds[3]
-    '''
-
     #set origin, if not specified
     if x_origin==None: x_origin=x_min
     if y_origin==None: y_origin=y_min
 
-    #
-    #width = raster.width
-    #height = raster.height
-    #width = int((x_max - x_min)/resolution)
-    #height = int((y_max - y_min)/resolution)
-
-
-    #if raster.count != len(band_labels):
-    #    print("different number of bands and labels", raster.count, band_labels)
-
-    values_calculator = {}
-    r2 = resolution/2
-    for label in rasters:
-        e = rasters[label]
-
+    def get_values_calculator(e):
         #open file
         raster = rasterio.open(e["file"])
         transform = raster.transform
@@ -208,7 +184,14 @@ def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max
             pixel_value = data[row,col]
             if pixel_value == nodata or pixel_value in no_data_values: return None
             return pixel_value
-        values_calculator[label] = fun
+        return fun
+
+
+    values_calculator = {}
+    r2 = resolution/2
+    for label in rasters:
+        e = rasters[label]
+        values_calculator[label] = get_values_calculator(e)
 
     #tiling
     _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, crs, format, compression)
