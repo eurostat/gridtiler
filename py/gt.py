@@ -160,21 +160,12 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 
 
-def tiling_raster(in_raster_file, band_labels, output_folder, resolution=None, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, no_data_values=[], tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(rasters, resolution, output_folder, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, tile_size_cell=128, format="csv", compression="snappy"):
 
-    #input raster file
-    raster = rasterio.open(in_raster_file)
-    transform = raster.transform
-
-    #resolution
-    if(resolution == None):
-        #no resolution specified: take the one from the raster
-        pixel_width = transform[0]
-        pixel_height = -transform[4]
-        if pixel_width != pixel_height:
-            print("Different resolutions in x and y for", in_raster_file, pixel_width, pixel_height)
-            return
-        resolution = pixel_width
+    #open input raster file
+    for raster in rasters:
+        print(raster)
+        #raster["raster"] = rasterio.open(raster["file"])
 
     #set extent, if not specified
     geo_bounds = raster.bounds
@@ -222,7 +213,18 @@ print("start")
 #tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
 
 
-tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/", resolution=1000, no_data_values=[255,0])
-#not necessary same resolution/origin
-#different raster per column
 
+
+
+tiling_raster(
+    {
+    "tcd_2012":{"file":'/home/juju/geodata/forest/in/forest_TCD_2012_100.tif', "band":1, 'no_data_values':[255,0]},
+    "tcd_2012":{"file":'/home/juju/geodata/forest/in/forest_TCD_2015_100.tif', "band":1, 'no_data_values':[255,0]},
+    "tcd_2018":{"file":'/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', "band":1, 'no_data_values':[255,0]},
+    "dlt_2012":{"file":'/home/juju/geodata/forest/in/forest_DLT_2012_100.tif', "band":1, 'no_data_values':[255,0]},
+    "dlt_2012":{"file":'/home/juju/geodata/forest/in/forest_DLT_2015_100.tif', "band":1, 'no_data_values':[255,0]},
+    "dlt_2018":{"file":'/home/juju/geodata/forest/in/forest_DLT_2018_100.tif', "band":1, 'no_data_values':[255,0]}
+ },
+ 10000,
+ "/home/juju/Bureau/aaa/"
+ )
