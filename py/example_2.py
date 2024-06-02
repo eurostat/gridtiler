@@ -1,9 +1,13 @@
 from pygridmap import gridtiler_raster
 
 gridtiler_raster.tiling_raster(
-    {"heigth":{"file":'assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', "band":1, 'no_data_values':[255,0]} },
+    #input data
+    { "heigth": {"file":'assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', "band":1, 'no_data_values':[255,0]} },
+    #output folder
     "assets/lux_height/",
+    #resolution
     10,
+    #extent
     4036900,
     2946000,
     4046740,
