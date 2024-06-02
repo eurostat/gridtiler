@@ -221,8 +221,8 @@ tiling_raster(
     "dlt_2012":{"file":'/home/juju/geodata/forest/in/forest_DLT_2015_100.tif', "band":1, 'no_data_values':[255,0]},
     "dlt_2018":{"file":'/home/juju/geodata/forest/in/forest_DLT_2018_100.tif', "band":1, 'no_data_values':[255,0]}
  },
- 10000,
  "/home/juju/Bureau/aaa/",
+ 10000,
 900000,
 900000,
 7400000,
