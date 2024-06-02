@@ -157,16 +157,13 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 
 
-def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, no_data_values=[], tile_size_cell=128, format="csv", compression="snappy"):
 
     #input raster file
     raster = rasterio.open(in_raster_file)
 
-    #
-    width = raster.width
-    height = raster.height
-
     #get resolution
+    #TODO this should be a parameter
     transform = raster.transform
     pixel_width = transform[0]
     pixel_height = -transform[4]
@@ -174,6 +171,10 @@ def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_o
         print("Different resolutions in x and y for", in_raster_file, pixel_width, pixel_height)
         return
     resolution = pixel_width
+
+    #
+    width = raster.width
+    height = raster.height
 
     #set extent, if not specified
     geo_bounds = raster.bounds
@@ -188,7 +189,7 @@ def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_o
 
     #value to ignore
     metadata = raster.meta
-    no_data = metadata["nodata"]
+    nodata = metadata["nodata"]
 
     if raster.count != len(band_labels):
         print("different number of bands and labels", raster.count, band_labels)
@@ -205,7 +206,7 @@ def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_o
             if col>=width or col<0: return None
             if row>=height or row <0: return None
             pixel_value = data[row,col]
-            if pixel_value == no_data: return None
+            if pixel_value == nodata or pixel_value in no_data_values: return None
             return pixel_value
         values_calculator[label] = fun
 
@@ -215,5 +216,9 @@ def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_o
 
 print("start")
 #tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
-tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/")
+
+
+tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/", no_data_values=[255])
+#not necessary same resolution/origin
+#different raster per column
 
