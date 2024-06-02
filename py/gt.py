@@ -11,11 +11,11 @@ import pandas as pd
 def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell=128, crs="", format="csv", compression="snappy"):
 
     #tile frame caracteristics
-    tileSizeGeo = resolution * tile_size_cell
-    tileMinX = floor( (x_min - x_origin) / tileSizeGeo )
-    tileMinY = floor( (y_min - y_origin) / tileSizeGeo )
-    tileMaxX = ceil( (x_max - x_origin) / tileSizeGeo )
-    tileMaxY = ceil( (y_max - y_origin) / tileSizeGeo )
+    tile_size_geo = resolution * tile_size_cell
+    tile_min_x = floor( (x_min - x_origin) / tile_size_geo )
+    tile_min_y = floor( (y_min - y_origin) / tile_size_geo )
+    tile_max_x = ceil( (x_max - x_origin) / tile_size_geo )
+    tile_max_y = ceil( (y_max - y_origin) / tile_size_geo )
 
     #get keys
     keys = values_calculator.keys()
@@ -33,8 +33,8 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
         return c
 
 	#TODO parallel ?
-    for xt in range(tileMinX, tileMaxX):
-        for yt in range(tileMinY, tileMaxY):
+    for xt in range(tile_min_x, tile_max_x):
+        for yt in range(tile_min_y, tile_max_y):
             print("tile", xt, yt)
 
             #prepare tile cells
@@ -50,8 +50,8 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
                     #get values
                     for k in keys:
                         #compute geo coordinate
-                        xG = x_origin + xt * tileSizeGeo + xtc*resolution
-                        yG = y_origin + yt * tileSizeGeo + ytc*resolution
+                        xG = x_origin + xt * tile_size_geo + xtc*resolution
+                        yG = y_origin + yt * tile_size_geo + ytc*resolution
 
                         if xG<x_min: continue
                         if xG>x_max: continue
