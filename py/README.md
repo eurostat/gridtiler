@@ -12,6 +12,8 @@ To tile gridded data from a raster file such as GeoTiff, import `gridtiler_raste
 
 See an example [here](example_2.py).
 
+See also [this repository](https://github.com/jgaffuri/tiled-europe-forest/tree/main).
+
 ## Tiling gridded CSV data
 
 To tile CSV gridded data, import `gridtiler` in your code with `from pygridmap import gridtiler`. `gridtiler` gives the three functions:
