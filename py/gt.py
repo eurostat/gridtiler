@@ -21,13 +21,13 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
     keys = values_calculator.keys()
 
     #minimum and maximum tile x,y, for info.json file
-    minTX=None
-    maxTX=None
-    minTY=None
-    maxTY=None
+    min_tx=None
+    min_ty=None
+    max_tx=None
+    max_ty=None
 
     #function to make cell template
-    def make_cell():
+    def build_cell():
         c = {}
         for k in keys: c[k] = None
         return c
@@ -44,28 +44,31 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
                 for ytc in range(0, tile_size_cell):
                     #print("cell", xtc, ytc)
 
-                    #make new cell
+                    #new cell
                     cell = None
 
                     #get values
-                    for k in keys:
+                    for key in keys:
                         #compute geo coordinate
-                        xG = x_origin + xt * tile_size_geo + xtc*resolution
-                        yG = y_origin + yt * tile_size_geo + ytc*resolution
+                        xc = x_origin + xt * tile_size_geo + xtc*resolution
+                        yc = y_origin + yt * tile_size_geo + ytc*resolution
 
-                        if xG<x_min: continue
-                        if xG>x_max: continue
-                        if yG<y_min: continue
-                        if yG>y_max: continue
+                        #check limits
+                        if xc<x_min: continue
+                        if xc>x_max: continue
+                        if yc<y_min: continue
+                        if yc>y_max: continue
 
                         #get value
-                        v = values_calculator[k](xG, yG)
+                        v = values_calculator[key](xc, yc)
 
                         #
                         if v==None: continue
-                        if cell == None: cell = make_cell()
-                        cell[k] = v
-                    
+
+                        #if not built, build cell
+                        if cell == None: cell = build_cell()
+                        cell[key] = v
+
                     #no value found: skip
                     if cell == None: continue
 
@@ -73,17 +76,17 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
                     cell["x"] = xtc
                     cell["y"] = ytc
 
+                    #store cell
                     cells.append(cell)
-
 
             #if no cell within tile, skip
             if len(cells) == 0: continue
 
             #store extreme positions, for info.json file
-            if minTY == None or yt<minTY: minTY = yt
-            if maxTY == None or yt>maxTY: maxTY = yt
-            if minTX == None or xt<minTX: minTX = xt
-            if maxTX == None or xt>maxTX: maxTX = xt
+            if min_tx == None or xt<min_tx: min_tx = xt
+            if min_ty == None or yt<min_ty: min_ty = yt
+            if max_tx == None or xt>max_tx: max_tx = xt
+            if max_ty == None or yt>max_ty: max_ty = yt
 
             #remove column with all values null
             #check columns
@@ -105,7 +108,7 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
             headers.insert(0, "x")
             headers.insert(1, "y")
 
-            #create output folder if it does not already exists
+            #create output folder, if it does not already exists
             fo = output_folder + "/" + str(xt) + "/"
             if not os.path.exists(fo): os.makedirs(fo)
 
@@ -144,10 +147,10 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
         },
         "resolutionGeo": resolution,
         "tilingBounds": {
-            "yMin": minTY,
-            "yMax": maxTY,
-            "xMax": maxTX,
-            "xMin": minTX
+            "yMin": min_ty,
+            "yMax": max_ty,
+            "xMax": max_tx,
+            "xMin": min_tx
         }
     }
 
@@ -157,24 +160,21 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 
 
-def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, no_data_values=[], tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(in_raster_file, band_labels, output_folder, resolution=None, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, no_data_values=[], tile_size_cell=128, format="csv", compression="snappy"):
 
     #input raster file
     raster = rasterio.open(in_raster_file)
 
-    #get resolution
-    #TODO this should be a parameter
-    transform = raster.transform
-    pixel_width = transform[0]
-    pixel_height = -transform[4]
-    if pixel_width != pixel_height:
-        print("Different resolutions in x and y for", in_raster_file, pixel_width, pixel_height)
-        return
-    resolution = pixel_width
-
-    #
-    width = raster.width
-    height = raster.height
+    #resolution
+    if(resolution == None):
+        #no resolution specified: take the one from the raster
+        transform = raster.transform
+        pixel_width = transform[0]
+        pixel_height = -transform[4]
+        if pixel_width != pixel_height:
+            print("Different resolutions in x and y for", in_raster_file, pixel_width, pixel_height)
+            return
+        resolution = pixel_width
 
     #set extent, if not specified
     geo_bounds = raster.bounds
@@ -187,14 +187,18 @@ def tiling_raster(in_raster_file, band_labels, output_folder, x_origin=None, y_o
     if x_origin==None: x_origin=x_min
     if y_origin==None: y_origin=y_min
 
+    #
+    #width = raster.width
+    #height = raster.height
+    width = int((x_max - x_min)/resolution)
+    height = int((y_max - y_min)/resolution)
+
     #value to ignore
     metadata = raster.meta
     nodata = metadata["nodata"]
 
     if raster.count != len(band_labels):
         print("different number of bands and labels", raster.count, band_labels)
-
-    print(width, height)
 
     values_calculator = {}
     r2 = resolution/2
