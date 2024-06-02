@@ -131,7 +131,7 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
             #load csv file            
             df = pd.read_csv(cfp)
             #save as parquet            
-            df.to_parquet(fo + yt + ".parquet", engine='pyarrow', compression=compression, index=False)
+            df.to_parquet(fo + str(yt) + ".parquet", engine='pyarrow', compression=compression, index=False)
             #delete csv file
             os.remove(cfp)
 
@@ -207,9 +207,12 @@ tiling_raster(
     "dlt_2015":{"file":'/home/juju/geodata/forest/in/forest_DLT_2015_100.tif', "band":1, 'no_data_values':[255,0]},
     "dlt_2018":{"file":'/home/juju/geodata/forest/in/forest_DLT_2018_100.tif', "band":1, 'no_data_values':[255,0]}
  },
- "/home/juju/Bureau/aaa/",
+ "/home/juju/Bureau/forest/10000/",
  10000,
 900000,
 900000,
 7400000,
-5500000)
+5500000,
+tile_size_cell=256,
+format="parquet"
+)
