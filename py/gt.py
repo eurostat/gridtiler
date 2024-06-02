@@ -199,6 +199,7 @@ def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max
 
 print("start")
 for res in [50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100]:
+    print(res)
     tiling_raster(
         {
         "tcd_2012":{"file":'/home/juju/geodata/forest/in/forest_TCD_2012_100.tif', "band":1, 'no_data_values':[255,0]},
