@@ -6,18 +6,18 @@ Install latest version of [pygridmap](https://github.com/eurostat/pygridmap) lib
 pip install git+https://github.com/eurostat/pygridmap.git
 ```
 
-and import `gridtiler` in your code with:
+## Tiling gridded raster data
 
-```python
-from pygridmap import gridtiler
-```
+To tile gridded data from a raster file such as GeoTiff, import `gridtiler_raster` in your code with `from pygridmap import gridtiler_raster`. `gridtiler_raster` gives access to a function `tiling_raster`.
 
-`gridtiler` gives the three functions:
+See an example [here](example_2.py).
+
+## Tiling gridded CSV data
+
+To tile CSV gridded data, import `gridtiler` in your code with `from pygridmap import gridtiler`. `gridtiler` gives the three functions:
 - `gridtiler.grid_transformation` to change the format of a CSV grid.
 - `gridtiler.grid_aggregation` to aggregate a CSV grid into a lower resolution CSV grid.
 - `gridtiler.grid_tiling` to tile a CSV grid.
-
-## Example
 
 Let's see an example on [european population grid at 5000m resolution](/assets/pop_5000m.csv). This input CSV dataset includes total population for 2006, 2011, 2018 and 2021 (columns `TOT_P_2006`, `TOT_P_2011`, `TOT_P_2018`, `TOT_P_2021`), a columns on country code `CNTR_ID` and the grid cell identifier `GRD_ID`.
 
