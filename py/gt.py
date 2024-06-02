@@ -160,19 +160,26 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 
 
-def tiling_raster(rasters, resolution, output_folder, x_origin=None, y_origin=None, x_min=None, y_min=None, x_max=None, y_max=None, tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, tile_size_cell=128, format="csv", compression="snappy"):
 
-    #open input raster file
-    for raster in rasters:
-        print(raster)
-        #raster["raster"] = rasterio.open(raster["file"])
+    #prepare input raster file
+    for label in rasters:
+        raster = rasters[label]
+        #open file
+        r = rasterio.open(raster["file"])
+        raster["raster"] = r
+        #value to ignore
+        raster["nodata"] = r.meta["nodata"]
 
+
+    '''
     #set extent, if not specified
     geo_bounds = raster.bounds
     if x_min==None: x_min = geo_bounds[0]
     if y_min==None: y_min  = geo_bounds[1]
     if x_max==None: x_max = geo_bounds[2]
     if y_max==None: y_max  = geo_bounds[3]
+    '''
 
     #set origin, if not specified
     if x_origin==None: x_origin=x_min
@@ -181,12 +188,9 @@ def tiling_raster(rasters, resolution, output_folder, x_origin=None, y_origin=No
     #
     #width = raster.width
     #height = raster.height
-    width = int((x_max - x_min)/resolution)
-    height = int((y_max - y_min)/resolution)
+    #width = int((x_max - x_min)/resolution)
+    #height = int((y_max - y_min)/resolution)
 
-    #value to ignore
-    metadata = raster.meta
-    nodata = metadata["nodata"]
 
     if raster.count != len(band_labels):
         print("different number of bands and labels", raster.count, band_labels)
@@ -226,5 +230,9 @@ tiling_raster(
     "dlt_2018":{"file":'/home/juju/geodata/forest/in/forest_DLT_2018_100.tif', "band":1, 'no_data_values':[255,0]}
  },
  10000,
- "/home/juju/Bureau/aaa/"
+ "/home/juju/Bureau/aaa/",
+900000,
+900000,
+7400000,
+5500000
  )
