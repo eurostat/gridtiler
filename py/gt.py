@@ -218,10 +218,10 @@ print("start")
 tiling_raster(
     {
     "tcd_2012":{"file":'/home/juju/geodata/forest/in/forest_TCD_2012_100.tif', "band":1, 'no_data_values':[255,0]},
-    "tcd_2012":{"file":'/home/juju/geodata/forest/in/forest_TCD_2015_100.tif', "band":1, 'no_data_values':[255,0]},
+    "tcd_2015":{"file":'/home/juju/geodata/forest/in/forest_TCD_2015_100.tif', "band":1, 'no_data_values':[255,0]},
     "tcd_2018":{"file":'/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', "band":1, 'no_data_values':[255,0]},
     "dlt_2012":{"file":'/home/juju/geodata/forest/in/forest_DLT_2012_100.tif', "band":1, 'no_data_values':[255,0]},
-    "dlt_2012":{"file":'/home/juju/geodata/forest/in/forest_DLT_2015_100.tif', "band":1, 'no_data_values':[255,0]},
+    "dlt_2015":{"file":'/home/juju/geodata/forest/in/forest_DLT_2015_100.tif', "band":1, 'no_data_values':[255,0]},
     "dlt_2018":{"file":'/home/juju/geodata/forest/in/forest_DLT_2018_100.tif', "band":1, 'no_data_values':[255,0]}
  },
  "/home/juju/Bureau/aaa/",
