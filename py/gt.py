@@ -164,11 +164,11 @@ def tiling_raster(in_raster_file, band_labels, output_folder, resolution=None, x
 
     #input raster file
     raster = rasterio.open(in_raster_file)
+    transform = raster.transform
 
     #resolution
     if(resolution == None):
         #no resolution specified: take the one from the raster
-        transform = raster.transform
         pixel_width = transform[0]
         pixel_height = -transform[4]
         if pixel_width != pixel_height:
@@ -222,7 +222,7 @@ print("start")
 #tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
 
 
-tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/", no_data_values=[255])
+tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/", resolution=10000, no_data_values=[255])
 #not necessary same resolution/origin
 #different raster per column
 
