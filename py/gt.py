@@ -161,6 +161,26 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 
 def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", compression="snappy"):
+    """Tile gridded statistics from raster files.
+
+    Args:
+        rasters (dict): A dictionnary with all data on the attributes and the raster file they are retrieved from.
+        output_folder (str): _description_
+        resolution (_type_): _description_
+        x_min (_type_): _description_
+        y_min (_type_): _description_
+        x_max (_type_): _description_
+        y_max (_type_): _description_
+        x_origin (_type_, optional): _description_. Defaults to None.
+        y_origin (_type_, optional): _description_. Defaults to None.
+        crs (str, optional): _description_. Defaults to "".
+        tile_size_cell (int, optional): _description_. Defaults to 128.
+        format (str, optional): _description_. Defaults to "csv".
+        compression (str, optional): _description_. Defaults to "snappy".
+
+    Returns:
+        _type_: _description_
+    """
 
     #set origin, if not specified
     if x_origin==None: x_origin=x_min
