@@ -207,8 +207,8 @@ def tiling_raster(in_raster_file, band_labels, output_folder, resolution=None, x
         data = raster.read(i+1)
         def fun(x_cell,y_cell):
             row, col = rowcol(transform, x_cell+r2, y_cell+r2)
-            if col>=width or col<0: return None
-            if row>=height or row <0: return None
+            if col>=raster.width or col<0: return None
+            if row>=raster.height or row <0: return None
             pixel_value = data[row,col]
             if pixel_value == nodata or pixel_value in no_data_values: return None
             return pixel_value
@@ -222,7 +222,7 @@ print("start")
 #tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
 
 
-tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/", resolution=10000, no_data_values=[255])
+tiling_raster('/home/juju/geodata/forest/in/forest_TCD_2018_100.tif', ["tcd"], "/home/juju/Bureau/aaa/", resolution=1000, no_data_values=[255,0])
 #not necessary same resolution/origin
 #different raster per column
 
