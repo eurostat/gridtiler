@@ -162,15 +162,6 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, tile_size_cell=128, format="csv", compression="snappy"):
 
-    #prepare input raster file
-    for label in rasters:
-        raster = rasters[label]
-        #open file
-        r = rasterio.open(raster["file"])
-        raster["raster"] = r
-        #value to ignore
-        raster["nodata"] = r.meta["nodata"]
-
 
     '''
     #set extent, if not specified
@@ -192,34 +183,35 @@ def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max
     #height = int((y_max - y_min)/resolution)
 
 
-    if raster.count != len(band_labels):
-        print("different number of bands and labels", raster.count, band_labels)
+    #if raster.count != len(band_labels):
+    #    print("different number of bands and labels", raster.count, band_labels)
 
     values_calculator = {}
     r2 = resolution/2
-    for i, label in enumerate(band_labels):
-        if label == None: continue
-        data = raster.read(i+1)
+    for label in rasters:
+        e = rasters[label]
+        #open file
+        raster = rasterio.open(e["file"])
+        transform = raster.transform
+        #value to ignore
+        nodata = raster.meta["nodata"]
+        no_data_values = e["no_data_values"]
+
+        data = raster.read(e["band"])
         def fun(x_cell,y_cell):
             row, col = rowcol(transform, x_cell+r2, y_cell+r2)
-            if col>=raster.width or col<0: return None
-            if row>=raster.height or row <0: return None
+            if col>=data.width or col<0: return None
+            if row>=data.height or row <0: return None
             pixel_value = data[row,col]
             if pixel_value == nodata or pixel_value in no_data_values: return None
             return pixel_value
         values_calculator[label] = fun
 
     #tiling
-    _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, str(raster.crs), format, compression)
+    _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, str(data.crs), format, compression)
 
 
 print("start")
-#tiling_raster('assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', ["height"], "assets/lux_height/")
-
-
-
-
-
 tiling_raster(
     {
     "tcd_2012":{"file":'/home/juju/geodata/forest/in/forest_TCD_2012_100.tif', "band":1, 'no_data_values':[255,0]},
