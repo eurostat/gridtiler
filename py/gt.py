@@ -160,7 +160,7 @@ def _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x
 
 
 
-def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, tile_size_cell=128, format="csv", compression="snappy"):
+def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", compression="snappy"):
 
 
     '''
@@ -190,25 +190,28 @@ def tiling_raster(rasters, output_folder, resolution, x_min, y_min, x_max, y_max
     r2 = resolution/2
     for label in rasters:
         e = rasters[label]
+
         #open file
         raster = rasterio.open(e["file"])
         transform = raster.transform
+
         #value to ignore
         nodata = raster.meta["nodata"]
         no_data_values = e["no_data_values"]
 
         data = raster.read(e["band"])
+
         def fun(x_cell,y_cell):
             row, col = rowcol(transform, x_cell+r2, y_cell+r2)
-            if col>=data.width or col<0: return None
-            if row>=data.height or row <0: return None
+            if col>=raster.width or col<0: return None
+            if row>=raster.height or row <0: return None
             pixel_value = data[row,col]
             if pixel_value == nodata or pixel_value in no_data_values: return None
             return pixel_value
         values_calculator[label] = fun
 
     #tiling
-    _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, str(data.crs), format, compression)
+    _tiling_(values_calculator, resolution, output_folder, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, crs, format, compression)
 
 
 print("start")
