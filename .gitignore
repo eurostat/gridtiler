@@ -26,3 +26,4 @@ package-lock.json
 node_modules/
 out/
 tmp/
+py/__pycache__/
