@@ -34,7 +34,6 @@ import pandas as pd
 
 
 
-
 def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", parquet_compression="snappy"):
     """Tile gridded statistics from raster files.
 
@@ -112,108 +111,121 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         for k in keys: c[k] = None
         return c
 
+
+
+
+
 	#TODO parallel ?
+
+    pairs = []
     for xt in range(tile_min_x, tile_max_x):
         for yt in range(tile_min_y, tile_max_y):
-            print("tile", xt, yt)
+            pairs.append([xt, yt])
 
-            #prepare tile cells
-            cells = []
 
-            for xtc in range(0, tile_size_cell):
-                for ytc in range(0, tile_size_cell):
-                    #print("cell", xtc, ytc)
 
-                    #new cell
-                    cell = None
 
-                    #get values
-                    for key in keys:
-                        #compute geo coordinate
-                        xc = x_origin + xt * tile_size_geo + xtc*resolution_out
-                        yc = y_origin + yt * tile_size_geo + ytc*resolution_out
+    for tile in pairs:
+        xt = tile[0], yt = tile[1]
+        print("tile", xt, yt)
 
-                        #check limits
-                        if xc<x_min: continue
-                        if xc>x_max: continue
-                        if yc<y_min: continue
-                        if yc>y_max: continue
+        #prepare tile cells
+        cells = []
 
-                        #get value
-                        v = values_calculator[key](xc, yc)
+        for xtc in range(0, tile_size_cell):
+            for ytc in range(0, tile_size_cell):
+                #print("cell", xtc, ytc)
 
-                        #
-                        if v==None: continue
+                #new cell
+                cell = None
 
-                        #if not built, build cell
-                        if cell == None: cell = build_cell()
-                        cell[key] = v
+                #get values
+                for key in keys:
+                    #compute geo coordinate
+                    xc = x_origin + xt * tile_size_geo + xtc*resolution_out
+                    yc = y_origin + yt * tile_size_geo + ytc*resolution_out
 
-                    #no value found: skip
-                    if cell == None: continue
+                    #check limits
+                    if xc<x_min: continue
+                    if xc>x_max: continue
+                    if yc<y_min: continue
+                    if yc>y_max: continue
 
-                    #set cell x,y within its tile
-                    cell["x"] = xtc
-                    cell["y"] = ytc
+                    #get value
+                    v = values_calculator[key](xc, yc)
 
-                    #store cell
-                    cells.append(cell)
+                    #
+                    if v==None: continue
 
-            #if no cell within tile, skip
-            if len(cells) == 0: continue
+                    #if not built, build cell
+                    if cell == None: cell = build_cell()
+                    cell[key] = v
 
-            #store extreme positions, for info.json file
-            if min_tx == None or xt<min_tx: min_tx = xt
-            if min_ty == None or yt<min_ty: min_ty = yt
-            if max_tx == None or xt>max_tx: max_tx = xt
-            if max_ty == None or yt>max_ty: max_ty = yt
+                #no value found: skip
+                if cell == None: continue
 
-            #remove column with all values null
-            #check columns
-            for key in keys:
-                #check if cells all have key as column
-                toRemove = True
-                for c in cells:
-                    if c[key]==None: continue
-                    toRemove = False
-                    break
-                #remove column
-                if toRemove:
-                    for c in cells: del c[key]
+                #set cell x,y within its tile
+                cell["x"] = xtc
+                cell["y"] = ytc
 
-            #make csv header, ensuring x and y are first columns
-            headers = list(cells[0].keys())
-            headers.remove("x")
-            headers.remove("y")
-            headers.insert(0, "x")
-            headers.insert(1, "y")
+                #store cell
+                cells.append(cell)
 
-            #create output folder, if it does not already exists
-            fo = output_folder + "/" + str(xt) + "/"
-            if not os.path.exists(fo): os.makedirs(fo)
+        #if no cell within tile, skip
+        if len(cells) == 0: continue
 
-            #save as CSV file
-            cfp = fo + str(yt) + ".csv"
-            with open(cfp, 'w', newline='') as csv_file:
-                #get writer
-                writer = csv.DictWriter(csv_file, fieldnames=headers)
-                #write the header
-                writer.writeheader()
+        #store extreme positions, for info.json file
+        if min_tx == None or xt<min_tx: min_tx = xt
+        if min_ty == None or yt<min_ty: min_ty = yt
+        if max_tx == None or xt>max_tx: max_tx = xt
+        if max_ty == None or yt>max_ty: max_ty = yt
 
-                #write the cell rows
-                for c in cells:
-                    writer.writerow(c)
+        #remove column with all values null
+        #check columns
+        for key in keys:
+            #check if cells all have key as column
+            toRemove = True
+            for c in cells:
+                if c[key]==None: continue
+                toRemove = False
+                break
+            #remove column
+            if toRemove:
+                for c in cells: del c[key]
 
-            if format == "csv": continue
+        #make csv header, ensuring x and y are first columns
+        headers = list(cells[0].keys())
+        headers.remove("x")
+        headers.remove("y")
+        headers.insert(0, "x")
+        headers.insert(1, "y")
 
-            #csv to parquet
+        #create output folder, if it does not already exists
+        fo = output_folder + "/" + str(xt) + "/"
+        if not os.path.exists(fo): os.makedirs(fo)
 
-            #load csv file            
-            df = pd.read_csv(cfp)
-            #save as parquet            
-            df.to_parquet(fo + str(yt) + ".parquet", engine='pyarrow', compression=parquet_compression, index=False)
-            #delete csv file
-            os.remove(cfp)
+        #save as CSV file
+        cfp = fo + str(yt) + ".csv"
+        with open(cfp, 'w', newline='') as csv_file:
+            #get writer
+            writer = csv.DictWriter(csv_file, fieldnames=headers)
+            #write the header
+            writer.writeheader()
+
+            #write the cell rows
+            for c in cells:
+                writer.writerow(c)
+
+        if format == "csv": continue
+
+        #csv to parquet
+
+        #load csv file            
+        df = pd.read_csv(cfp)
+        #save as parquet            
+        df.to_parquet(fo + str(yt) + ".parquet", engine='pyarrow', compression=parquet_compression, index=False)
+        #delete csv file
+        os.remove(cfp)
 
 
     #write info.json
