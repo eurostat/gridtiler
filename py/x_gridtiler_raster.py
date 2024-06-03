@@ -61,7 +61,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     if x_origin==None: x_origin=x_min
     if y_origin==None: y_origin=y_min
 
-    #prepare raster files
+    #prepare and load raster file data
     for label in rasters:
         raster = rasters[label]
         #open file
