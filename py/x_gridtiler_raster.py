@@ -99,6 +99,24 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
 
         #TODO: get all values in one go ?
         # with raster["data"][rowmin:rowmax,colmin:colmax]
+        '''
+                # Convert the geographical coordinates to pixel coordinates
+        pixel_coords = [src.index(x, y) for x, y in grid_coords]
+        
+        # Get the min and max rows and columns to determine the bounding window
+        rows, cols = zip(*pixel_coords)
+        min_row, max_row = min(rows), max(rows)
+        min_col, max_col = min(cols), max(cols)
+        
+        # Read the window that covers all the grid points
+        window = rasterio.windows.Window(min_col, min_row, max_col - min_col + 1, max_row - min_row + 1)
+        data = src.read(1, window=window)
+        
+        # Extract values at the specific rows and columns
+        values = [data[row - min_row, col - min_col] for row, col in pixel_coords]
+     
+        '''
+
 
         for xtc in range(0, tile_size_cell):
             for ytc in range(0, tile_size_cell):
