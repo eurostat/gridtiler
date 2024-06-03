@@ -30,6 +30,7 @@ import os
 import csv
 import json
 import pandas as pd
+import concurrent.futures
 
 
 
@@ -99,35 +100,14 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     #get keys
     keys = values_calculator.keys()
 
-    #minimum and maximum tile x,y, for info.json file
-    min_tx=None
-    min_ty=None
-    max_tx=None
-    max_ty=None
-
     #function to make cell template
     def build_cell():
         c = {}
         for k in keys: c[k] = None
         return c
 
-
-
-
-
-	#TODO parallel ?
-
-    pairs = []
-    for xt in range(tile_min_x, tile_max_x):
-        for yt in range(tile_min_y, tile_max_y):
-            pairs.append([xt, yt])
-
-
-
-
-    for tile in pairs:
-        xt = tile[0], yt = tile[1]
-        print("tile", xt, yt)
+    #function to make a tile
+    def make_tile(xt, yt):
 
         #prepare tile cells
         cells = []
@@ -172,13 +152,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
                 cells.append(cell)
 
         #if no cell within tile, skip
-        if len(cells) == 0: continue
-
-        #store extreme positions, for info.json file
-        if min_tx == None or xt<min_tx: min_tx = xt
-        if min_ty == None or yt<min_ty: min_ty = yt
-        if max_tx == None or xt>max_tx: max_tx = xt
-        if max_ty == None or yt>max_ty: max_ty = yt
+        if len(cells) == 0: return False
 
         #remove column with all values null
         #check columns
@@ -216,7 +190,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
             for c in cells:
                 writer.writerow(c)
 
-        if format == "csv": continue
+        if format == "csv": return True
 
         #csv to parquet
 
@@ -227,6 +201,37 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         #delete csv file
         os.remove(cfp)
 
+        return True
+
+
+
+
+
+
+
+    #make list of tiles x,y
+    pairs = []
+    for xt in range(tile_min_x, tile_max_x):
+        for yt in range(tile_min_y, tile_max_y):
+            pairs.append([xt, yt])
+
+    #minimum and maximum tile x,y, for info.json file
+    min_tx=None
+    min_ty=None
+    max_tx=None
+    max_ty=None
+
+	#TODO parallel
+    #make all tiles
+    for [xt,yt] in pairs:
+        print("tile", xt, yt)
+        result = make_tile(xt, yt)
+        if result:
+            #store extreme positions, for info.json file
+            if min_tx == None or xt<min_tx: min_tx = xt
+            if min_ty == None or yt<min_ty: min_ty = yt
+            if max_tx == None or xt>max_tx: max_tx = xt
+            if max_ty == None or yt>max_ty: max_ty = yt
 
     #write info.json
     data = {
