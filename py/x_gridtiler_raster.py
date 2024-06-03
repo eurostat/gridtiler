@@ -64,13 +64,12 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     #prepare raster files
     for label in rasters:
         raster = rasters[label]
-        if not "no_data_values" in raster: raster["no_data_values"] = []
         #open file
         r = rasterio.open(raster["file"])
         raster["raster"] = r
-        raster["transform"] = r.transform
         raster["nodata"] = r.meta["nodata"]
         raster["data"] = r.read(raster["band"])
+        if not "no_data_values" in raster: raster["no_data_values"] = []
 
     #tile frame caracteristics
     tile_size_geo = resolution_out * tile_size_cell
@@ -118,13 +117,13 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
                     if yc>y_max: continue
 
                     #get value
-                    rr = rasters[key]
-                    row, col = rowcol(rr["transform"], xc+r2, yc+r2)
-                    if col>=rr["raster"].width or col<0: continue
-                    if row>=rr["raster"].height or row <0: continue
-                    v = rr["data"][row,col]
+                    raster = rasters[key]
+                    row, col = rowcol(raster["raster"].transform, xc+r2, yc+r2)
+                    if col>=raster["raster"].width or col<0: continue
+                    if row>=raster["raster"].height or row <0: continue
+                    v = raster["data"][row,col]
 
-                    if v == rr["nodata"] or v in rr["no_data_values"]: continue
+                    if v == raster["nodata"] or v in raster["no_data_values"]: continue
 
                     #if not built, build cell
                     if cell == None: cell = build_cell()
