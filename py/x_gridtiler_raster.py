@@ -64,10 +64,11 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     for label in rasters:
         raster = rasters[label]
         #open file
-        r = rasterio.open(raster["file"])
-        raster["raster"] = r
-        raster["nodata"] = r.meta["nodata"]
-        raster["data"] = r.read(raster["band"])
+        src = rasterio.open(raster["file"])
+        raster["src"] = src
+        #raster["mmap"] = src.read(1, out_shape=(1, src.height, src.width), masked=True)
+        raster["nodata"] = src.meta["nodata"]
+        raster["data"] = src.read(raster["band"])
         if not "no_data_values" in raster: raster["no_data_values"] = []
 
     #tile frame caracteristics
@@ -97,6 +98,10 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         cells = []
 
 
+        #TODO use memory mapping ?
+        #mmap = src.read(1, out_shape=(1, src.height, src.width), masked=True)
+        #value = mmap[src.index(x, y)]
+
         #TODO: get all values of the tile in one go ?
         '''
         for key in keys:
@@ -109,7 +114,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
             grid_coords = [(x, y) for x in x_coords for y in y_coords]
 
             #convert the geographical coordinates to pixel coordinates
-            src = rasters[key]["raster"]
+            src = rasters[key]["src"]
             pixel_coords = [src.index(x, y) for x, y in grid_coords]
 
             # Get the min and max rows and columns to determine the bounding window
@@ -155,10 +160,11 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
 
                     #get value
                     raster = rasters[key]
-                    #row, col = rowcol(raster["raster"].transform, xc+r2, yc+r2)
-                    row, col = raster["raster"].index(xc+r2, yc+r2)
-                    if col>=raster["raster"].width or col<0: continue
-                    if row>=raster["raster"].height or row <0: continue
+                    src = raster["src"]
+                    #v = raster["mmap"][src.index(xc+r2, yc+r2)]
+                    row, col = src.index(xc+r2, yc+r2)
+                    if col>=src.width or col<0: continue
+                    if row>=src.height or row <0: continue
                     v = raster["data"][row,col]
 
                     if v == raster["nodata"] or v in raster["no_data_values"]: continue
