@@ -104,17 +104,18 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
                 #new cell
                 cell = None
 
+                #compute geo coordinate
+                xc = x_origin + xt * tile_size_geo + xtc*resolution_out
+                yc = y_origin + yt * tile_size_geo + ytc*resolution_out
+
+                #check limits
+                if xc<x_min: continue
+                if xc>x_max: continue
+                if yc<y_min: continue
+                if yc>y_max: continue
+
                 #get values
                 for key in keys:
-                    #compute geo coordinate
-                    xc = x_origin + xt * tile_size_geo + xtc*resolution_out
-                    yc = y_origin + yt * tile_size_geo + ytc*resolution_out
-
-                    #check limits
-                    if xc<x_min: continue
-                    if xc>x_max: continue
-                    if yc<y_min: continue
-                    if yc>y_max: continue
 
                     #get value
                     raster = rasters[key]
