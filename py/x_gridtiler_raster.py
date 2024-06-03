@@ -24,14 +24,13 @@ Tile gridded data from raster files for visualisation with GridViz javascript li
 
 
 import rasterio
-from rasterio.transform import rowcol
 from math import ceil,floor
 import os
 import csv
 import json
 import pandas as pd
 import concurrent.futures
-
+import numpy as np
 
 
 
@@ -97,24 +96,42 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         #prepare tile cells
         cells = []
 
-        #TODO: get all values in one go ?
+
+        #TODO: get all values of the tile in one go ?
         # with raster["data"][rowmin:rowmax,colmin:colmax]
         '''
-                # Convert the geographical coordinates to pixel coordinates
-        pixel_coords = [src.index(x, y) for x, y in grid_coords]
-        
-        # Get the min and max rows and columns to determine the bounding window
-        rows, cols = zip(*pixel_coords)
-        min_row, max_row = min(rows), max(rows)
-        min_col, max_col = min(cols), max(cols)
-        
-        # Read the window that covers all the grid points
-        window = rasterio.windows.Window(min_col, min_row, max_col - min_col + 1, max_row - min_row + 1)
-        data = src.read(1, window=window)
-        
-        # Extract values at the specific rows and columns
-        values = [data[row - min_row, col - min_col] for row, col in pixel_coords]
-     
+
+        for key in keys:
+            min_x = x_origin + xt * tile_size_geo
+            max_x = x_origin + xt * tile_size_geo + (tile_size_cell-1)*resolution_out
+            min_y = y_origin + yt * tile_size_geo
+            max_y = y_origin + yt * tile_size_geo + (tile_size_cell-1)*resolution_out
+            x_coords = np.linspace(min_x, max_x, tile_size_cell) #use range ?
+            y_coords = np.linspace(min_y, max_y, tile_size_cell)
+            grid_coords = [(x, y) for x in x_coords for y in y_coords]
+
+            #convert the geographical coordinates to pixel coordinates
+            src = rasters[key]["raster"]
+            pixel_coords = [src.index(x, y) for x, y in grid_coords]
+
+            # Get the min and max rows and columns to determine the bounding window
+            rows, cols = zip(*pixel_coords)
+            min_row, max_row = min(rows), max(rows)
+            min_col, max_col = min(cols), max(cols)
+
+            # Read the window that covers all the grid points
+            window = rasterio.windows.Window(min_col, min_row, max_col - min_col + 1, max_row - min_row + 1)
+            data = src.read(1, window=window)
+            # Extract values at the specific rows and columns
+            values = [data[row - min_row, col - min_col] for row, col in pixel_coords]
+
+            #build matrix of cell templates
+            cells = []
+            for xtc in range(0, tile_size_cell):
+                c = []
+                cells.append(c)
+                for ytc in range(0, tile_size_cell):
+                    c.append(build_cell())
         '''
 
 
@@ -140,7 +157,8 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
 
                     #get value
                     raster = rasters[key]
-                    row, col = rowcol(raster["raster"].transform, xc+r2, yc+r2)
+                    #row, col = rowcol(raster["raster"].transform, xc+r2, yc+r2)
+                    row, col = raster["raster"].index(xc+r2, yc+r2)
                     if col>=raster["raster"].width or col<0: continue
                     if row>=raster["raster"].height or row <0: continue
                     v = raster["data"][row,col]
