@@ -35,7 +35,7 @@ import concurrent.futures
 
 
 
-def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", parquet_compression="snappy"):
+def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", parquet_compression="snappy", num_processors_to_use=1):
     """Tile gridded statistics from raster files.
 
     Args:
@@ -224,22 +224,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     max_tx=None
     max_ty=None
 
-    '''
-	#TODO parallel
-    #make tiles
-    for [xt,yt] in pairs:
-        print("tile", xt, yt)
-        result = make_tile(xt, yt)
-        if result:
-            #store extreme positions, for info.json file
-            if min_tx == None or xt<min_tx: min_tx = xt
-            if min_ty == None or yt<min_ty: min_ty = yt
-            if max_tx == None or xt>max_tx: max_tx = xt
-            if max_ty == None or yt>max_ty: max_ty = yt
-    '''
-
     #make tiles, in parallel
-    num_processors_to_use=8
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
         tasks_to_do = {executor.submit(make_tile, tile): tile for tile in pairs}
 
