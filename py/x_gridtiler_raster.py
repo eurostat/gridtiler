@@ -97,6 +97,9 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         #prepare tile cells
         cells = []
 
+        #TODO: get all values in one go ?
+        # with raster["data"][rowmin:rowmax,colmin:colmax]
+
         for xtc in range(0, tile_size_cell):
             for ytc in range(0, tile_size_cell):
                 #print("cell", xtc, ytc)
