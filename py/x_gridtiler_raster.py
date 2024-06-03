@@ -107,7 +107,10 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         return c
 
     #function to make a tile
-    def make_tile(xt, yt):
+
+    def make_tile(xyt):
+        [xt, yt] = xyt
+        print("tile",xt,yt)
 
         #prepare tile cells
         cells = []
@@ -152,7 +155,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
                 cells.append(cell)
 
         #if no cell within tile, skip
-        if len(cells) == 0: return False
+        if len(cells) == 0: return
 
         #remove column with all values null
         #check columns
@@ -190,7 +193,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
             for c in cells:
                 writer.writerow(c)
 
-        if format == "csv": return True
+        if format == "csv": return xyt
 
         #csv to parquet
 
@@ -201,7 +204,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         #delete csv file
         os.remove(cfp)
 
-        return True
+        return xyt
 
 
 
@@ -221,8 +224,9 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     max_tx=None
     max_ty=None
 
+    '''
 	#TODO parallel
-    #make all tiles
+    #make tiles
     for [xt,yt] in pairs:
         print("tile", xt, yt)
         result = make_tile(xt, yt)
@@ -232,6 +236,24 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
             if min_ty == None or yt<min_ty: min_ty = yt
             if max_tx == None or xt>max_tx: max_tx = xt
             if max_ty == None or yt>max_ty: max_ty = yt
+    '''
+
+    #make tiles, in parallel
+    num_processors_to_use=8
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
+        tasks_to_do = {executor.submit(make_tile, tile): tile for tile in pairs}
+
+        # merge task outputs
+        for task_output in concurrent.futures.as_completed(tasks_to_do):
+            xyt = task_output.result()
+            if xyt!=None:
+                [xt,yt]=xyt
+                #store extreme positions, for info.json file
+                if min_tx == None or xt<min_tx: min_tx = xt
+                if min_ty == None or yt<min_ty: min_ty = yt
+                if max_tx == None or xt>max_tx: max_tx = xt
+                if max_ty == None or yt>max_ty: max_ty = yt
+
 
     #write info.json
     data = {
