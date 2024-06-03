@@ -32,7 +32,63 @@ import json
 import pandas as pd
 
 
-def _tiling_(values_calculator, output_folder, resolution_out, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell=128, crs="", format="csv", parquet_compression="snappy"):
+
+
+
+def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", parquet_compression="snappy"):
+    """Tile gridded statistics from raster files.
+
+    Args:
+        rasters (dict): A dictionnary with all data on the attributes and the raster file they are retrieved from.
+        output_folder (str): The path to the output folder where to store the tiles.
+        resolution_out (float): The resolution of the output grid in the CRS UoM (usually meters).
+        x_min (float): The extent to be tiled
+        y_min (float): The extent to be tiled
+        x_max (float): The extent to be tiled
+        y_max (float): The extent to be tiled
+        x_origin (float, optional): The origin position - if not specified, x_min is used. Defaults to None.
+        y_origin (float, optional): The origin position - if not specified, y_min is used. Defaults to None.
+        crs (str, optional): A text describing the grid CRS. Defaults to "".
+        tile_size_cell (int, optional): The size of a tile, in number of cells. Defaults to 128.
+        format (str, optional): The output file encodings format, either "csv" of "parquet". Defaults to "csv".
+        parquet_compression (str, optional): The parquet compression. Be aware gridviz-parquet supports only snappy encodings, currently. Defaults to "snappy".
+
+    Returns:
+        _type_: _description_
+    """
+
+    #set origin, if not specified
+    if x_origin==None: x_origin=x_min
+    if y_origin==None: y_origin=y_min
+
+    r2 = resolution_out/2
+
+    def get_values_calculator(file, band, no_data_values=[]):
+        #open file
+        raster = rasterio.open(file)
+        transform = raster.transform
+
+        #value to ignore
+        nodata = raster.meta["nodata"]
+
+        data = raster.read(band)
+
+        def fun(x_cell,y_cell):
+            row, col = rowcol(transform, x_cell+r2, y_cell+r2)
+            if col>=raster.width or col<0: return None
+            if row>=raster.height or row <0: return None
+            pixel_value = data[row,col]
+            if pixel_value == nodata or pixel_value in no_data_values: return None
+            return pixel_value
+        return fun
+
+
+    values_calculator = {}
+    for label in rasters:
+        entry = rasters[label]
+        no_data_values = entry["no_data_values"] if "no_data_values" in entry else []
+        values_calculator[label] = get_values_calculator(entry["file"], entry["band"], no_data_values)
+
 
     #tile frame caracteristics
     tile_size_geo = resolution_out * tile_size_cell
@@ -181,62 +237,3 @@ def _tiling_(values_calculator, output_folder, resolution_out, x_origin, y_origi
     with open(output_folder + '/info.json', 'w') as json_file:
         json.dump(data, json_file, indent=3)
 
-
-
-
-def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y_max, x_origin=None, y_origin=None, crs="", tile_size_cell=128, format="csv", parquet_compression="snappy"):
-    """Tile gridded statistics from raster files.
-
-    Args:
-        rasters (dict): A dictionnary with all data on the attributes and the raster file they are retrieved from.
-        output_folder (str): The path to the output folder where to store the tiles.
-        resolution_out (float): The resolution of the output grid in the CRS UoM (usually meters).
-        x_min (float): The extent to be tiled
-        y_min (float): The extent to be tiled
-        x_max (float): The extent to be tiled
-        y_max (float): The extent to be tiled
-        x_origin (float, optional): The origin position - if not specified, x_min is used. Defaults to None.
-        y_origin (float, optional): The origin position - if not specified, y_min is used. Defaults to None.
-        crs (str, optional): A text describing the grid CRS. Defaults to "".
-        tile_size_cell (int, optional): The size of a tile, in number of cells. Defaults to 128.
-        format (str, optional): The output file encodings format, either "csv" of "parquet". Defaults to "csv".
-        parquet_compression (str, optional): The parquet compression. Be aware gridviz-parquet supports only snappy encodings, currently. Defaults to "snappy".
-
-    Returns:
-        _type_: _description_
-    """
-
-    #set origin, if not specified
-    if x_origin==None: x_origin=x_min
-    if y_origin==None: y_origin=y_min
-
-    r2 = resolution_out/2
-
-    def get_values_calculator(file, band, no_data_values=[]):
-        #open file
-        raster = rasterio.open(file)
-        transform = raster.transform
-
-        #value to ignore
-        nodata = raster.meta["nodata"]
-
-        data = raster.read(band)
-
-        def fun(x_cell,y_cell):
-            row, col = rowcol(transform, x_cell+r2, y_cell+r2)
-            if col>=raster.width or col<0: return None
-            if row>=raster.height or row <0: return None
-            pixel_value = data[row,col]
-            if pixel_value == nodata or pixel_value in no_data_values: return None
-            return pixel_value
-        return fun
-
-
-    values_calculator = {}
-    for label in rasters:
-        entry = rasters[label]
-        no_data_values = entry["no_data_values"] if "no_data_values" in entry else []
-        values_calculator[label] = get_values_calculator(entry["file"], entry["band"], no_data_values)
-
-    #tiling
-    _tiling_(values_calculator, output_folder, resolution_out, x_origin, y_origin, x_min, y_min, x_max, y_max, tile_size_cell, crs, format, parquet_compression)
