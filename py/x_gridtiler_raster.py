@@ -61,34 +61,16 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     if x_origin==None: x_origin=x_min
     if y_origin==None: y_origin=y_min
 
-    r2 = resolution_out/2
-
-    def get_values_calculator(file, band, no_data_values=[]):
-        #open file
-        raster = rasterio.open(file)
-        transform = raster.transform
-
-        #value to ignore
-        nodata = raster.meta["nodata"]
-
-        data = raster.read(band)
-
-        def fun(x_cell,y_cell):
-            row, col = rowcol(transform, x_cell+r2, y_cell+r2)
-            if col>=raster.width or col<0: return None
-            if row>=raster.height or row <0: return None
-            pixel_value = data[row,col]
-            if pixel_value == nodata or pixel_value in no_data_values: return None
-            return pixel_value
-        return fun
-
-
-    values_calculator = {}
+    #prepare raster files
     for label in rasters:
-        entry = rasters[label]
-        no_data_values = entry["no_data_values"] if "no_data_values" in entry else []
-        values_calculator[label] = get_values_calculator(entry["file"], entry["band"], no_data_values)
-
+        raster = rasters[label]
+        if not "no_data_values" in raster: raster["no_data_values"] = []
+        #open file
+        r = rasterio.open(raster["file"])
+        raster["raster"] = r
+        raster["transform"] = r.transform
+        raster["nodata"] = r.meta["nodata"]
+        raster["data"] = r.read(raster["band"])
 
     #tile frame caracteristics
     tile_size_geo = resolution_out * tile_size_cell
@@ -97,8 +79,10 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
     tile_max_x = ceil( (x_max - x_origin) / tile_size_geo )
     tile_max_y = ceil( (y_max - y_origin) / tile_size_geo )
 
+    r2 = resolution_out/2
+
     #get keys
-    keys = values_calculator.keys()
+    keys = rasters.keys()
 
     #function to make cell template
     def build_cell():
@@ -107,7 +91,6 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
         return c
 
     #function to make a tile
-
     def make_tile(xyt):
         [xt, yt] = xyt
         print("tile",xt,yt)
@@ -135,10 +118,13 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
                     if yc>y_max: continue
 
                     #get value
-                    v = values_calculator[key](xc, yc)
+                    rr = rasters[key]
+                    row, col = rowcol(rr["transform"], xc+r2, yc+r2)
+                    if col>=rr["raster"].width or col<0: continue
+                    if row>=rr["raster"].height or row <0: continue
+                    v = rr["data"][row,col]
 
-                    #
-                    if v==None: continue
+                    if v == rr["nodata"] or v in rr["no_data_values"]: continue
 
                     #if not built, build cell
                     if cell == None: cell = build_cell()
