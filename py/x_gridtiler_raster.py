@@ -98,9 +98,7 @@ def tiling_raster(rasters, output_folder, resolution_out, x_min, y_min, x_max, y
 
 
         #TODO: get all values of the tile in one go ?
-        # with raster["data"][rowmin:rowmax,colmin:colmax]
         '''
-
         for key in keys:
             min_x = x_origin + xt * tile_size_geo
             max_x = x_origin + xt * tile_size_geo + (tile_size_cell-1)*resolution_out

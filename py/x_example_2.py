@@ -4,7 +4,7 @@ tiling_raster(
     #input data
     { "height": {"file":'assets/LU001_LUXEMBOURG_UA2012_DHM_V020.tif', "band":1, 'no_data_values':[255,0]} },
     #output folder
-    "assets/lux_height/",
+    "assets/lux_height",
     #resolution
     10,
     #extent
