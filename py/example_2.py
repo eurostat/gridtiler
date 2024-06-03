@@ -11,5 +11,6 @@ gridtiler_raster.tiling_raster(
     4036900,
     2946000,
     4046740,
-    2956380
+    2956380,
+    num_processors_to_use = 3
     )
