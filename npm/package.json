@@ -6,6 +6,7 @@
     "grid",
     "tiling",
     "CSV",
+    "parquet",
     "tabular",
     "statistics"
   ],
