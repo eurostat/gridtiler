@@ -10,7 +10,7 @@
 
 `gridtiler` command is now available.
 
-The [duckdb](https://www.npmjs.com/package/duckdb) package is an optional dependency, only used for the parquet output (`-e parquet`). It may not install on some Node.js versions, such as Node.js 18, if no prebuilt binary is available and it cannot be compiled: the installation still succeeds and the CSV output works, but the parquet output is then not available.
+The [@duckdb/node-api](https://www.npmjs.com/package/@duckdb/node-api) package is an optional dependency, only used for the parquet output (`-e parquet`). If it is not available on your system, the installation still succeeds and the CSV output works, but the parquet output is then not available.
 
 ## Documentation
 

@@ -46,7 +46,7 @@
     "fast-csv": "^4.3.6"
   },
   "optionalDependencies": {
-    "duckdb": "^1.4.4"
+    "@duckdb/node-api": "^2.0.0-r.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

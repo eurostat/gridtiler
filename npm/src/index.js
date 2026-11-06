@@ -21,14 +21,14 @@ export default async function (opts) {
     if (opts.parquetCompression && opts.outencodings !== "parquet")
         console.warn("Parameter parquetCompression ignored: the output format is not parquet.")
 
-    //duckdb is an optional dependency, only needed for the parquet output.
+    //@duckdb/node-api is an optional dependency, only needed for the parquet output.
     //Load it first, to fail before processing the data if it is not available.
-    let duckdb
+    let DuckDBInstance
     if (opts.outencodings === "parquet") {
         try {
-            duckdb = (await import('duckdb')).default
+            DuckDBInstance = (await import('@duckdb/node-api')).DuckDBInstance
         } catch (e) {
-            throw new Error("Parquet output requires the optional 'duckdb' package, which could not be loaded: " + e.message)
+            throw new Error("Parquet output requires the optional '@duckdb/node-api' package, which could not be loaded: " + e.message)
         }
     }
 
@@ -41,7 +41,7 @@ export default async function (opts) {
         .on('data', row => {
             cells.push(row)
         })
-        .on('end', () => {
+        .on('end', async () => {
 
             console.log("   " + cells.length + " cells loaded")
 
@@ -212,6 +212,9 @@ export default async function (opts) {
             const delim = opts.delim || ","
             const encs = opts.outencodings || "csv"
 
+            //the tiles to convert to parquet
+            const parquetTiles = []
+
             for (let t of tiles) {
 
                 // prepare tile cells for export
@@ -275,31 +278,10 @@ export default async function (opts) {
                 if (encs == "csv")
                     writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
                 else if (encs == "parquet") {
-                    //https://www.npmjs.com/package/duckdb
-                    //https://github.com/duckdb/duckdb
-                    //https://duckdb.org/docs/api/nodejs/overview
-
-                    //save as CSV, first
+                    //save as CSV first: it is converted to parquet in the end
                     const csvFile = folder + t.y + ".csv"
                     writeFileSync(csvFile, data.join("\n"), "utf-8");
-
-                    //convert it to parquet with duckdb, then delete it
-                    //NB: use exec and not run: on Windows, with run, duckdb keeps the file open and it cannot be deleted.
-                    const db = new duckdb.Database(':memory:');
-                    db.exec("COPY (SELECT * FROM read_csv_auto('" + csvFile + "', delim='" + delim + "', header=True)) TO '" + folder + t.y + ".parquet' (FORMAT PARQUET, CODEC '" + compression + "')", (err) => {
-                        if (err) {
-                            console.error("Could not save parquet file for tile " + t.x + "/" + t.y + ": " + err.message)
-                            process.exitCode = 1
-                        }
-                        //NB: an exception thrown in a duckdb callback crashes the process without any message.
-                        db.close(() => {
-                            try {
-                                unlinkSync(csvFile)
-                            } catch (e) {
-                                console.warn("Could not delete temporary file " + csvFile + ": " + e.message)
-                            }
-                        })
-                    })
+                    parquetTiles.push({ csvFile: csvFile, parquetFile: folder + t.y + ".parquet" })
 
                 } else
                     console.warn("Unexpected encodings: " + encs)
@@ -347,5 +329,39 @@ export default async function (opts) {
             mkdirSync(opts.output, { recursive: true })
             writeFileSync(opts.output + "/info.json", jsonData);
 
+            //convert the tiles to parquet
+            if (parquetTiles.length > 0) {
+                console.log("Save parquet files...")
+                await saveAsParquet(parquetTiles, delim, compression, DuckDBInstance)
+            }
+
         });
+}
+
+
+//convert CSV files to parquet, and delete them
+//https://duckdb.org/docs/stable/clients/node_neo/overview
+async function saveAsParquet(tiles, delim, compression, DuckDBInstance) {
+    const instance = await DuckDBInstance.create(':memory:')
+    const connection = await instance.connect()
+
+    //to use a text in a SQL query
+    const sqlText = (text) => "'" + text.split("'").join("''") + "'"
+
+    for (let tile of tiles) {
+        try {
+            await connection.run("COPY (SELECT * FROM read_csv_auto(" + sqlText(tile.csvFile) + ", delim=" + sqlText(delim) + ", header=True)) TO " + sqlText(tile.parquetFile) + " (FORMAT PARQUET, CODEC '" + compression + "')")
+        } catch (e) {
+            console.error("Could not save parquet file " + tile.parquetFile + ": " + e.message)
+            process.exitCode = 1
+        }
+        try {
+            unlinkSync(tile.csvFile)
+        } catch (e) {
+            console.warn("Could not delete temporary file " + tile.csvFile + ": " + e.message)
+        }
+    }
+
+    connection.closeSync()
+    instance.closeSync()
 }
