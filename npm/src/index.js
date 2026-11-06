@@ -15,7 +15,7 @@ export default async function (opts) {
     if (opts.aggregationMethod && !isAggregated)
         console.warn("Parameter aggregationMethod ignored: no aggregation is computed. Use aggregationFactor.")
 
-    const compression = String(opts.parquetCompression || "GZIP").toUpperCase()
+    const compression = String(opts.parquetCompression || "SNAPPY").toUpperCase()
     if (!PARQUET_COMPRESSIONS.includes(compression))
         throw new Error("Unexpected parquet compression: '" + opts.parquetCompression + "'. Supported values: " + PARQUET_COMPRESSIONS.join(", "))
     if (opts.parquetCompression && opts.outencodings !== "parquet")

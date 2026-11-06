@@ -22,7 +22,7 @@ Run `gridtiler --help` to show the help, or see there:
 | -o, --output <folder> | | output folder where to produce the tiled grid. | "out/" |
 | -s, --columns <list> | | The columns to keep, as comma separated list. If not specified, all columns are kept. | undefined |
 | -e, --outencodings <string> | | output encodings format: 'csv' or 'parquet'. | "csv" |
-| -z, --parquetCompression <string> | | The compression mode of the parquet output: UNCOMPRESSED, SNAPPY, GZIP, BROTLI, LZ4, LZ4_RAW or ZSTD. | "GZIP" |
+| -z, --parquetCompression <string> | | The compression mode of the parquet output: UNCOMPRESSED, SNAPPY, GZIP, BROTLI, LZ4, LZ4_RAW or ZSTD. Note that [gridviz-parquet](https://github.com/eurostat/gridviz-parquet) currently reads only SNAPPY and UNCOMPRESSED. | "SNAPPY" |
 | -r, --resolutionGeo <number> | X | The grid resolution, that is the size of a grid cell in the CRS unit. |  |
 | -t, --tileSizeCell <integer> | | The size of the tile in number of cells. | 128 |
 | -x, --originPointX <number> | | The X coordinate of the tiling scheme origin point (bottom left). |0  |

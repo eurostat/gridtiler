@@ -46,14 +46,35 @@ The output file `tmp/pop_5000.csv` is ready to be tiled, but aggregated version 
 
 ```python
 print("Aggregation to 10 000m")
-gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_10000.csv", 2, 0)
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_10000.csv", 2, aggregation_rounding=0)
 
 print("Aggregation to 20 000m")
-gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_20000.csv", 4, 0)
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_20000.csv", 4, aggregation_rounding=0)
 
 print("Aggregation to 50 000m")
-gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_50000.csv", 10, 0)
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_50000.csv", 10, aggregation_rounding=0)
 ```
+
+By default, the aggregated values are the sum of the values. To use another method, specify an `aggregation_fun` dictionary giving the function of each column. For example, to compute the mean of a column `age` and keep the most frequent value of a column `type`:
+
+```python
+gridtiler.grid_aggregation("tmp/grid_5000.csv", 5000, "tmp/grid_10000.csv", 2, aggregation_fun={"age": gridtiler.aggregation_average_3, "type": gridtiler.aggregation_mode})
+```
+
+The predefined functions are:
+
+| Function | Result | Empty values |
+| --- | --- | --- |
+| `aggregation_sum` | Sum | Ignored |
+| `aggregation_average` | Sum, divided by the number of cells with a row in the input | Count as 0 |
+| `aggregation_average_2` | Sum, divided by the number of possible cells (*a x a*) | Count as 0 |
+| `aggregation_average_3` | Mean | Ignored |
+| `aggregation_median` | Median | Ignored |
+| `aggregation_min`, `aggregation_max` | Minimum, maximum | Ignored |
+| `aggregation_mode` | Most frequent value. Also for non-numerical values | Ignored |
+| `aggregation_single_value` | Value of the first cell | Not ignored |
+
+A custom function can also be used: it receives the list of values and the number of possible cells (*a x a*).
 
 Each resolution file can be tiled with:
 

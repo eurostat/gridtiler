@@ -23,11 +23,11 @@ gridtiler.grid_transformation("assets/pop_5000m.csv", cell_transformation_fun, "
 
 
 print("Aggregation to 10 000m")
-gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_10000.csv", 2, 0)
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_10000.csv", 2, aggregation_rounding=0)
 print("Aggregation to 20 000m")
-gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_20000.csv", 4, 0)
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_20000.csv", 4, aggregation_rounding=0)
 print("Aggregation to 50 000m")
-gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_50000.csv", 10, 0)
+gridtiler.grid_aggregation("tmp/pop_5000.csv", 5000, "tmp/pop_50000.csv", 10, aggregation_rounding=0)
 
 
 

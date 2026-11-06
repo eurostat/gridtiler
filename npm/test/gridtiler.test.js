@@ -240,7 +240,7 @@ const readParquet = (file) => {
 }
 
 const CODECS = [
-    [undefined, 'GZIP'],
+    [undefined, 'SNAPPY'],
     ['UNCOMPRESSED', 'UNCOMPRESSED'],
     ['SNAPPY', 'SNAPPY'],
     ['GZIP', 'GZIP'],

@@ -27,7 +27,7 @@ cmd
     .option("-o, --output <folder>", "output folder where to produce the tiled grid.", "out/")
     .option("-s, --columns list<string>", "The columns to keep, as comma separated list. If not specified, all columns are kept.")
     .option("-e, --outencodings <string>", "output encodings format: 'csv' or 'parquet'", "csv")
-    .option("-z, --parquetCompression <string>", "The compression mode of the parquet output: UNCOMPRESSED, SNAPPY, GZIP, BROTLI, LZ4, LZ4_RAW or ZSTD. Default: GZIP.")
+    .option("-z, --parquetCompression <string>", "The compression mode of the parquet output: UNCOMPRESSED, SNAPPY, GZIP, BROTLI, LZ4, LZ4_RAW or ZSTD. Default: SNAPPY.")
     .option("-r, --resolutionGeo <number>", "The grid resolution, that is the size of a grid cell in the CRS unit.")
     .option("-t, --tileSizeCell <number>", "The size of the tile in number of cells.", 128)
     .option("-x, --originPointX <number>", "The X coordinate of the tiling scheme origin point (bottom left).", 0)
