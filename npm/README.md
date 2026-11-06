@@ -5,7 +5,7 @@
 
 ## Installation
 
-- Install [Node.js](https://nodejs.org/), version >=14
+- Install [Node.js](https://nodejs.org/), version >=22
 - Run `npm install gridtiler -g` (with `sudo` for Linux users)
 
 `gridtiler` command is now available.
