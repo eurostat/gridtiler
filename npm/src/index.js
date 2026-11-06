@@ -263,6 +263,8 @@ export default async function (opts) {
                         //get stat value
                         const v = c[k]
                         //store as a integer if it is an integer
+                        //keep empty values empty: "" == 0 is true in javascript
+                        if (typeof v === "string" && v.trim() === "") { d_.push(""); continue }
                         const vI = Math.floor(v)
                         d_.push(v == vI ? vI : v)
                     }
@@ -343,7 +345,7 @@ export default async function (opts) {
             //save tiling info object
             const jsonData = JSON.stringify(info, null, 3);
             mkdirSync(opts.output, { recursive: true })
-            writeFileSync(opts.output + "info.json", jsonData);
+            writeFileSync(opts.output + "/info.json", jsonData);
 
         });
 }

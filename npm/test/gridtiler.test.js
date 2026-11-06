@@ -162,6 +162,28 @@ test('CLI: aggregation method without aggregation is ignored, with a warning', (
     })
 })
 
+test('CLI: empty values stay empty, and zero stays zero', () => {
+    withDir((dir, input) => {
+        writeFileSync(input, 'x,y,a,b\n0,0,,1\n1000,0,0,2\n2000,0, ,3.5\n')
+        const out = join(dir, 'out') + '/'
+        const r = run('-i', input, '-r', '1000', '-o', out)
+        assert.equal(r.status, 0, r.stderr)
+        assert.equal(readFileSync(join(out, '0', '0.csv'), 'utf8'), 'x,y,a,b\n0,0,,1\n1,0,0,2\n2,0,,3.5')
+    })
+})
+
+test('CLI: output folder, with or without trailing slash', () => {
+    withDir((dir, input) => {
+        for (const out of [join(dir, 'with') + '/', join(dir, 'without')]) {
+            const r = run('-i', input, '-r', '1000', '-o', out)
+            assert.equal(r.status, 0, r.stderr)
+            assert.ok(existsSync(join(out, 'info.json')), out)
+            assert.ok(existsSync(join(out, '0', '0.csv')), out)
+        }
+        assert.equal(existsSync(join(dir, 'withoutinfo.json')), false)
+    })
+})
+
 test('CLI: --version and --help, outside of npm', () => {
     assert.equal(run('--version').stdout.trim(), pkg.version)
     assert.match(run('--help').stdout, new RegExp(pkg.description))
