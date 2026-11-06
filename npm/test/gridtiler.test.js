@@ -1,8 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs'
-import { createRequire } from 'node:module'
+import { mkdirSync, mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -43,14 +42,8 @@ const aggregated = (...method) =>
         return { cell: Object.fromEntries(header.split(',').map((k, i) => [k, values[i]])), stderr: r.stderr }
     })
 
-const getDuckdb = () => {
-    try {
-        return createRequire(import.meta.url)('duckdb')
-    } catch (e) {
-        return undefined
-    }
-}
-const noDuckdb = getDuckdb() ? false : 'duckdb is not installed'
+const hasDuckdb = await import('@duckdb/node-api').then(() => true, () => false)
+const noDuckdb = hasDuckdb ? false : '@duckdb/node-api is not installed'
 
 test('aggregate: numerical methods', () => {
     const vs = ['1', '2', '4', '9']
@@ -207,37 +200,60 @@ test('CLI: parquet compression without parquet output is ignored, with a warning
     })
 })
 
-test('CLI: error when duckdb is missing', { skip: noDuckdb ? false : 'duckdb is installed' }, () => {
+test('CLI: error when @duckdb/node-api is missing', { skip: hasDuckdb ? '@duckdb/node-api is installed' : false }, () => {
     withDir((dir, input) => {
         const r = run('-i', input, '-r', '1000', '-e', 'parquet', '-o', join(dir, 'out') + '/')
         assert.equal(r.status, 1)
-        assert.match(r.stderr, /requires the optional 'duckdb' package/)
+        assert.match(r.stderr, /requires the optional '@duckdb\/node-api' package/)
     })
 })
 
-//read the rows and the compression modes of a parquet file.
-//This is done in another process: with Database.all, duckdb keeps the file open, which prevents its deletion on Windows.
+//read the rows and the compression modes of a parquet file
 const READ_PARQUET = `
-const duckdb = require('duckdb')
-const f = process.argv[1]
-const db = new duckdb.Database(':memory:')
-db.all("SELECT * FROM read_parquet('" + f + "') ORDER BY x, y", (err, rows) => {
-    if (err) throw err
-    db.all("SELECT DISTINCT compression FROM parquet_metadata('" + f + "')", (err2, meta) => {
-        if (err2) throw err2
-        const toNumber = (k, v) => (typeof v === 'bigint' ? Number(v) : v)
-        console.log(JSON.stringify({ rows, compressions: meta.map((m) => m.compression) }, toNumber))
-    })
-})`
+import { DuckDBInstance } from '@duckdb/node-api'
+const f = process.argv[1].split("'").join("''")
+const connection = await (await DuckDBInstance.create(':memory:')).connect()
+const rows = (await connection.runAndReadAll("SELECT * FROM read_parquet('" + f + "') ORDER BY x, y")).getRowObjects()
+const meta = (await connection.runAndReadAll("SELECT DISTINCT compression c FROM parquet_metadata('" + f + "')")).getRowObjects()
+const toNumber = (k, v) => (typeof v === 'bigint' ? Number(v) : v)
+console.log(JSON.stringify({ rows, compressions: meta.map((m) => m.c) }, toNumber))
+`
 
 const readParquet = (file) => {
-    const r = spawnSync(process.execPath, ['-e', READ_PARQUET, file.split('\\').join('/')], {
+    const r = spawnSync(process.execPath, ['--input-type=module', '-e', READ_PARQUET, file.split('\\').join('/')], {
         encoding: 'utf8',
         cwd: fileURLToPath(new URL('..', import.meta.url)),
     })
     assert.equal(r.status, 0, r.stderr)
     return JSON.parse(r.stdout)
 }
+
+test('CLI: parquet output with several tiles, non ASCII values and an apostrophe in the path', { skip: noDuckdb }, () => {
+    withDir((dir, input) => {
+        writeFileSync(input, 'x,y,pop,type\n0,0,1,\u00c4\n130000,0,2,\u6771\u4eac\n')
+        const out = join(dir, "it's") + '/'
+        const r = run('-i', input, '-r', '1000', '-e', 'parquet', '-o', out)
+        assert.equal(r.status, 0, r.stderr)
+        assert.deepEqual(readdirSync(join(out, '0')), ['0.parquet'])
+        assert.deepEqual(readdirSync(join(out, '1')), ['0.parquet'])
+        assert.ok(existsSync(join(out, 'info.json')))
+        assert.equal(readParquet(join(out, '0', '0.parquet')).rows[0].type, '\u00c4')
+        assert.equal(readParquet(join(out, '1', '0.parquet')).rows[0].type, '\u6771\u4eac')
+    })
+})
+
+test('CLI: an error when saving a parquet file is reported', { skip: noDuckdb }, () => {
+    withDir((dir, input) => {
+        const out = join(dir, 'out') + '/'
+        //a folder where the file should be saved
+        mkdirSync(join(out, '0', '0.parquet', 'x'), { recursive: true })
+        writeFileSync(join(out, '0', '0.parquet', 'x', 'y'), 'z')
+        const r = run('-i', input, '-r', '1000', '-e', 'parquet', '-o', out)
+        assert.equal(r.status, 1)
+        assert.match(r.stderr, /Could not save parquet file/)
+        assert.equal(existsSync(join(out, '0', '0.csv')), false)
+    })
+})
 
 const CODECS = [
     [undefined, 'SNAPPY'],
