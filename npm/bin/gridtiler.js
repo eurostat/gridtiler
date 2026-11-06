@@ -13,20 +13,16 @@ gridtiler -i ../assets/pop_2018_10km.csv -r 10000 --crs 3035 -t 128 -x 0 -y 0
 
 import gtil from 'gridtiler'
 import cmd from 'commander'
+import { readFileSync } from 'fs'
 
 
-//import pkg from "../package.json" assert { type: "json" };
-//import pkg from "../package.json" with { type: "json" };
-//import { readFileSync } from 'fs';
-//const pkg = JSON.parse(readFileSync("package.json"));
-
-//console.log(process.env.npm_package_version)
+const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url)));
 
 //define command line parameters
 cmd
-    .version(process.env.npm_package_version)
+    .version(pkg.version)
     //.usage("[options] <[name=]file>…")
-    .description(process.env.npm_package_description)
+    .description(pkg.description)
     .option("-i, --input <file>", "input CSV file. One row per cell. The file is expected to include two 'x' and 'y' columns for the coordinates of the lower left corner. If not, see positionFunction parameter")
     .option("-o, --output <folder>", "output folder where to produce the tiled grid.", "out/")
     .option("-s, --columns list<string>", "The columns to keep, as comma separated list. If not specified, all columns are kept.")
@@ -55,4 +51,7 @@ if (!cmd.resolutionGeo)
     throw new Error("Missing parameter: -res, --resolutionGeo");
 
 //launch tiling
-gtil(cmd)
+gtil(cmd).catch((e) => {
+    console.error(e.message);
+    process.exit(1);
+})

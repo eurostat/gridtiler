@@ -1,10 +1,20 @@
 
 import { parse } from 'fast-csv';
 import { createReadStream, mkdirSync, writeFileSync, unlinkSync, renameSync, existsSync } from 'fs';
-import duckdb from 'duckdb'
 
 
-export default function (opts) {
+export default async function (opts) {
+
+    //duckdb is an optional dependency, only needed for the parquet output.
+    //Load it first, to fail before processing the data if it is not available.
+    let duckdb
+    if (opts.outencodings === "parquet") {
+        try {
+            duckdb = (await import('duckdb')).default
+        } catch (e) {
+            throw new Error("Parquet output requires the optional 'duckdb' package, which could not be loaded: " + e.message)
+        }
+    }
 
     console.log("Load CSV data...")
     //https://blog.logrocket.com/complete-guide-csv-files-node-js/
