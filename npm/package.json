@@ -33,7 +33,7 @@
     "server": "webpack serve -c webpack.config.dev.js --static ./",
     "doc": "./node_modules/.bin/jsdoc src/ src/dataset src/legend src/style -d docs/jsdoc",
     "build": "webpack --config webpack.config.prod.cjs",
-    "test": "jest"
+    "test": "node --test"
   },
   "files": [
     "bin/*",
@@ -50,7 +50,7 @@
     "util": "^0.12.5"
   },
   "optionalDependencies": {
-    "duckdb": "^0.8.1"
+    "duckdb": "^1.4.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

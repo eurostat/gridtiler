@@ -1,9 +1,25 @@
 
 import { parse } from 'fast-csv';
-import { createReadStream, mkdirSync, writeFileSync, unlinkSync, renameSync, existsSync } from 'fs';
+import { createReadStream, mkdirSync, writeFileSync, unlinkSync } from 'fs';
+import { parseAggregationMethod, aggregate } from './aggregation.js';
+
+//the compression modes for the parquet format
+const PARQUET_COMPRESSIONS = ["UNCOMPRESSED", "SNAPPY", "GZIP", "BROTLI", "LZ4", "LZ4_RAW", "ZSTD"]
 
 
 export default async function (opts) {
+
+    //check parameters first, to fail before processing the data
+    const aggregationMethod = parseAggregationMethod(opts.aggregationMethod)
+    const isAggregated = opts.aggregationFactor && +opts.aggregationFactor > 1
+    if (opts.aggregationMethod && !isAggregated)
+        console.warn("Parameter aggregationMethod ignored: no aggregation is computed. Use aggregationFactor.")
+
+    const compression = String(opts.parquetCompression || "GZIP").toUpperCase()
+    if (!PARQUET_COMPRESSIONS.includes(compression))
+        throw new Error("Unexpected parquet compression: '" + opts.parquetCompression + "'. Supported values: " + PARQUET_COMPRESSIONS.join(", "))
+    if (opts.parquetCompression && opts.outencodings !== "parquet")
+        console.warn("Parameter parquetCompression ignored: the output format is not parquet.")
 
     //duckdb is an optional dependency, only needed for the parquet output.
     //Load it first, to fail before processing the data if it is not available.
@@ -77,7 +93,7 @@ export default async function (opts) {
             let r = +opts.resolutionGeo
 
             //compute aggregation, if necessary
-            if (opts.aggregationFactor && +opts.aggregationFactor > 1) {
+            if (isAggregated) {
 
                 //target resolution
                 const tr = +opts.aggregationFactor * r
@@ -101,16 +117,23 @@ export default async function (opts) {
                     cA.cells.push(c)
                 }
 
-                //aggregation function
-                //TODO handle other cases: average, mode, etc
-                const aggregateSum = (vs) => { let sum = 0; for (let v of vs) { sum += +v; } return sum }
-
                 //prepare function to round aggregated figures
                 const tolerance = Math.pow(10, opts.aggregationRounding)
                 const roundToTolerance = (number) => Math.round(number * tolerance) / tolerance;
 
                 //aggregate cell values
                 const keys = Object.keys(cells[0])
+
+                //check the columns specified for the aggregation methods
+                for (let k of Object.keys(aggregationMethod.columns))
+                    if (!keys.includes(k)) {
+                        console.error("Unknown column in aggregationMethod parameter: " + k + ". Columns: " + keys.join(", "))
+                        process.exitCode = 1
+                        return
+                    }
+                const getMethod = (k) => aggregationMethod.columns[k] || aggregationMethod.defaultMethod
+                const nonNumerical = new Set()
+
                 cells = []
                 for (let cA_ of Object.values(aggCells)) {
                     for (let cA of Object.values(cA_)) {
@@ -120,7 +143,10 @@ export default async function (opts) {
                             const vs = []
                             for (let c of cA.cells) vs.push(c[k])
                             //compute and set aggregated value
-                            cA[k] = aggregateSum(vs)
+                            const method = getMethod(k)
+                            cA[k] = aggregate(method, vs)
+                            if (method === "mode" || cA[k] === undefined) continue
+                            if (Number.isNaN(cA[k])) nonNumerical.add(k)
                             if (opts.aggregationRounding != undefined)
                                 cA[k] = roundToTolerance(cA[k])
                         }
@@ -128,6 +154,9 @@ export default async function (opts) {
                         cells.push(cA)
                     }
                 }
+
+                for (let k of nonNumerical)
+                    console.warn("Column " + k + " has non numerical values: its aggregation with method " + getMethod(k) + " gives NaN. Consider using the method mode.")
 
                 //use new resolution
                 r = tr
@@ -182,7 +211,6 @@ export default async function (opts) {
             //the delimiter
             const delim = opts.delim || ","
             const encs = opts.outencodings || "csv"
-            const codec = "GZIP" //TODO expose this as a parameter ?
 
             for (let t of tiles) {
 
@@ -250,27 +278,24 @@ export default async function (opts) {
                     //https://duckdb.org/docs/api/nodejs/overview
 
                     //save as CSV, first
-                    writeFileSync(folder + t.y + ".csv", data.join("\n"), "utf-8", (err) => { if (err) console.log(err); });
+                    const csvFile = folder + t.y + ".csv"
+                    writeFileSync(csvFile, data.join("\n"), "utf-8");
 
-                    //make duckdb connection
+                    //convert it to parquet with duckdb, then delete it
+                    //NB: use exec and not run: on Windows, with run, duckdb keeps the file open and it cannot be deleted.
                     const db = new duckdb.Database(':memory:');
-                    const conn = new duckdb.Connection(db)
-
-                    //import CSV data
-                    const id = makeid(16)
-                    const stmt = new duckdb.Statement(conn, "CREATE TABLE " + id + " AS SELECT * FROM read_csv_auto('" + folder + t.y + ".csv" + "', delim='" + delim + "', header=True)")
-                    stmt.run(null, () => {
-                        //delete CSV file
-                        unlinkSync(folder + t.y + ".csv")
-                        //export data as parquet file
-                        const stmt2 = new duckdb.Statement(conn, "EXPORT DATABASE '" + folder + "' (FORMAT PARQUET, CODEC '" + codec + "')")
-                        stmt2.run(null, () => {
-                            //rename parquet file
-                            renameSync(folder + id + ".parquet", folder + t.y + ".parquet")
-                            //remove unecessary files
-                            if (existsSync(folder + "schema.sql")) unlinkSync(folder + "schema.sql")
-                            if (existsSync(folder + "load.sql")) unlinkSync(folder + "load.sql")
-                            db.close()
+                    db.exec("COPY (SELECT * FROM read_csv_auto('" + csvFile + "', delim='" + delim + "', header=True)) TO '" + folder + t.y + ".parquet' (FORMAT PARQUET, CODEC '" + compression + "')", (err) => {
+                        if (err) {
+                            console.error("Could not save parquet file for tile " + t.x + "/" + t.y + ": " + err.message)
+                            process.exitCode = 1
+                        }
+                        //NB: an exception thrown in a duckdb callback crashes the process without any message.
+                        db.close(() => {
+                            try {
+                                unlinkSync(csvFile)
+                            } catch (e) {
+                                console.warn("Could not delete temporary file " + csvFile + ": " + e.message)
+                            }
                         })
                     })
 
@@ -321,19 +346,4 @@ export default async function (opts) {
             writeFileSync(opts.output + "info.json", jsonData);
 
         });
-}
-
-
-
-//generate a random string of length 'length'
-function makeid(length) {
-    let result = '';
-    const characters = 'abcdefghijklmnopqrstuvwxyz';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        counter += 1;
-    }
-    return result;
 }

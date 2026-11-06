@@ -10,7 +10,7 @@
 
 `gridtiler` command is now available.
 
-The [duckdb](https://www.npmjs.com/package/duckdb) package is an optional dependency, only used for the parquet output (`-e parquet`). It may not install on recent Node.js versions if no prebuilt binary is available and it cannot be compiled: the installation still succeeds and the CSV output works, but the parquet output is then not available.
+The [duckdb](https://www.npmjs.com/package/duckdb) package is an optional dependency, only used for the parquet output (`-e parquet`). It may not install on some Node.js versions, such as Node.js 18, if no prebuilt binary is available and it cannot be compiled: the installation still succeeds and the CSV output works, but the parquet output is then not available.
 
 ## Documentation
 
@@ -22,11 +22,13 @@ Run `gridtiler --help` to show the help, or see there:
 | -o, --output <folder> | | output folder where to produce the tiled grid. | "out/" |
 | -s, --columns <list> | | The columns to keep, as comma separated list. If not specified, all columns are kept. | undefined |
 | -e, --outencodings <string> | | output encodings format: 'csv' or 'parquet'. | "csv" |
+| -z, --parquetCompression <string> | | The compression mode of the parquet output: UNCOMPRESSED, SNAPPY, GZIP, BROTLI, LZ4, LZ4_RAW or ZSTD. | "GZIP" |
 | -r, --resolutionGeo <number> | X | The grid resolution, that is the size of a grid cell in the CRS unit. |  |
 | -t, --tileSizeCell <integer> | | The size of the tile in number of cells. | 128 |
 | -x, --originPointX <number> | | The X coordinate of the tiling scheme origin point (bottom left). |0  |
 | -y, --originPointY <number> | | The Y coordinate of the tiling scheme origin point (bottom left). |0  |
 | -a, --aggregationFactor <integer> | | In case there is the need for aggregating the cells to lower resolution, specify this parameter. The resolution of the aggregated grid will be this parameter multiplied by the input resolution *resolutionGeo*. | undefined |
+| -A, --aggregationMethod <string> | | When aggregating, the method: *sum*, *mean* (or *average*), *median*, *min*, *max* or *mode*. To set it by column, use a comma separated list. See [aggregation](#aggregation). | "sum" |
 | -R, --aggregationRounding <integer> | | When aggregating, the number of decimals of the aggregated figure. | 6 |
 | -p, --positionFunction <string> | | A javascript function body returning the position of an input cell c as a {x,y} object. | "return { x: c.x, y: c.y };" |
 | -f, --filterFunction <string> | | A javascript function body specifying if an input cell should be filtered or kept. Return true to keep, false to filter out. | undefined |
@@ -83,7 +85,18 @@ Gridtiler offers the possibility to aggregate grid cells to lower resolutions, o
 
 Example: The command `gridtiler -i pop_5000m.csv -r 5000 -a 4` aggregates the grid *pop_5000m.csv* from the input resolution *5000* to the resolution *5000 x 4 = 20000*.
 
-Note that currently grids with only **numerical** columns can be aggregated, and the aggregation is computed **as a sum**. This aggregation may be extended to support other types of aggregations such as average, median, min, max, near or mode (for non-numerical values).
+By default, the aggregation is computed **as a sum**. Use the `-A, --aggregationMethod` parameter to specify another method among *sum*, *mean* (or *average*), *median*, *min*, *max* and *mode*:
+
+- `-A mean` applies the method to all columns.
+- `-A "pop:sum,type:mode"` sets the method by column. The other columns are aggregated as a sum.
+- `-A "mean,pop:sum,type:mode"` also changes the method of the other columns, here to *mean*.
+
+Example: The command `gridtiler -i grid.csv -r 10 -a 2 -A "pop:sum,type:mode"` sums the *pop* column, and keeps the most frequent value of the *type* column.
+
+Note that:
+- Only **mode** supports non-numerical values, the other methods give *NaN*. In case of a tie, *mode* gives the first of the most frequent values found. Its result is not rounded.
+- The methods are computed only on the existing cells: a missing cell is not considered as a cell with value 0. For example, the *mean* of an aggregated cell made of two input cells is computed on these two cells, whatever the aggregation factor.
+- **Empty values** are ignored, and the result is empty if all values are empty. The exception is *sum*, for which an empty value counts as 0.
 
 #### Tiled multi-resolution grid
 
